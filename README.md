@@ -42,7 +42,7 @@ mvn clean package
 ```
 
 - `mvn clean`: Xóa các file build cũ để đảm bảo build sạch.
-- `mvn package`: Đóng gói ứng dụng thành tệp `.jar` để chạy.
+- `mvn package`: Đóng gói ứng dụng thành tệp `.war` để chạy.
 
 ## 🐳 Chạy Dự Án bằng Docker
 
@@ -90,7 +90,7 @@ Dưới đây là một số hình ảnh về giao diện của dự án:
 *Danh sách sản phẩm được hiển thị trên website.*
 
 ![Trang chi tiết sản phẩm](images/productdetail.png)
-*Giao diện chi tiết sản phẩm để người dùng có thể đặt hàng.*
+*Giao diện chi tiết sản phẩm.*
 
 ![Trang giỏ hàng](images/cart.png)
 *Giao diện giỏ hàng khi người dùng thêm sản phẩm.*
