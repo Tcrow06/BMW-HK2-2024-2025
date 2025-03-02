@@ -25,6 +25,11 @@ services:
       - "6379:6379"
     networks:
       - my_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build: .
@@ -34,7 +39,7 @@ services:
       - mysql
       - redis
     environment:
-      MYSQL_URL: "jdbc:mysql://mysql:3306/WebCuoiKy?createDatabaseIfNotExist=true"
+      MYSQL_URL: "jdbc:mysql://mysql:3306/WebCuoiKy"
       MYSQL_USERNAME: "root"
       MYSQL_PASSWORD: "1234"
       REDIS_HOST: "redis"
