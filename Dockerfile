@@ -17,4 +17,5 @@ COPY server.xml /usr/local/tomcat/conf/server.xml
 
 EXPOSE 8080 8443
 
+
 CMD ["catalina.sh", "run"]
