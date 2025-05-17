@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container_14
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: "WebCuoiKy"
+    ports:
+      - "3300:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./webck.sql:/docker-entrypoint-initdb.d/webck.sql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - my_network
+
+  redis:
+    image: redis:7.4.1-alpine
+    container_name: redis_container_14
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - my_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: my_java_app_14
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      MYSQL_URL: "jdbc:mysql://mysql:3300/WebCuoiKy"
+      MYSQL_USERNAME: "root"
+      MYSQL_PASSWORD: "1234"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    networks:
+      - my_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  my_network:
+    driver: bridge
