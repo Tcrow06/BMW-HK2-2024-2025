@@ -30,6 +30,5 @@ COPY server.xml /usr/local/tomcat/conf/server.xml
 EXPOSE 8080 8443
 
 COPY wait-for-mysql.sh /wait-for-mysql.sh
-RUN chmod +x /wait-for-mysql.sh
-
+RUN dos2unix /wait-for-mysql.sh && chmod +x /wait-for-mysql.sh
 CMD ["/wait-for-mysql.sh", "catalina.sh", "run"]
