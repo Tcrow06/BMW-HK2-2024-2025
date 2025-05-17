@@ -31,6 +31,7 @@ public class CustomerDAO extends AbstractDAO<CustomerEntity> implements ICustome
 
     @Override
     public CustomerEntity findByEmail(String email) {
+
         EntityManager em = HibernateUtil.getEmFactory().createEntityManager();
         EntityTransaction trans = em.getTransaction();
         CustomerEntity customer = null;

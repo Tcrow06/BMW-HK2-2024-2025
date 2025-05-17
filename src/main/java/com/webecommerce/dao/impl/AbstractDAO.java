@@ -3,10 +3,7 @@ package com.webecommerce.dao.impl;
 import com.webecommerce.dao.GenericDAO;
 import com.webecommerce.utils.HibernateUtil;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
+import javax.persistence.*;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,11 +30,14 @@ public abstract class AbstractDAO<T> implements GenericDAO<T> {
 
     // Find object by ID
     public T findById(Long id) {
+        EntityManager em = getEntityManager();
         try {
-            return getEntityManager().find(entityClass, id);
+            return em.find(entityClass, id);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error finding object with ID: " + id, e);
             return null;
+        } finally {
+            closeEntityManager(em);
         }
     }
 
@@ -66,18 +66,16 @@ public abstract class AbstractDAO<T> implements GenericDAO<T> {
 
     // Find object by attribute
     protected List<T> findByAttribute(String attributeName, Object value) {
-        // Điều chỉnh câu truy vấn dựa trên việc value có phải null hay không
-        String query = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE ";
-        if (value == null) {
-            query += "e." + attributeName + " IS NULL";
-        } else {
-            query += "e." + attributeName + " = :value";
-        }
-
+        EntityManager em = getEntityManager();
         try {
-            var typedQuery = entityManager.createQuery(query, entityClass);
+            String query = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE ";
+            if (value == null) {
+                query += "e." + attributeName + " IS NULL";
+            } else {
+                query += "e." + attributeName + " = :value";
+            }
 
-            // Chỉ đặt tham số nếu value không phải null
+            TypedQuery<T> typedQuery = em.createQuery(query, entityClass);
             if (value != null) {
                 typedQuery.setParameter("value", value);
             }
@@ -86,6 +84,8 @@ public abstract class AbstractDAO<T> implements GenericDAO<T> {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error finding object by attribute: " + attributeName + " with value: " + value, e);
             return null;
+        } finally {
+            closeEntityManager(em);
         }
     }
 
@@ -120,7 +120,7 @@ public abstract class AbstractDAO<T> implements GenericDAO<T> {
 
     // Find object by attribute
     protected T findOneByAttribute(String attributeName, Object value) {
-        // Xây dựng câu truy vấn động
+        EntityManager em = getEntityManager();
         String query = "SELECT e FROM " + entityClass.getSimpleName() + " e WHERE ";
         if (value == null) {
             query += "e." + attributeName + " IS NULL";
@@ -129,30 +129,28 @@ public abstract class AbstractDAO<T> implements GenericDAO<T> {
         }
 
         try {
-            // Tạo truy vấn động
-            var typedQuery = entityManager.createQuery(query, entityClass);
-
-            // Chỉ set tham số nếu giá trị không phải null
+            TypedQuery<T> typedQuery = em.createQuery(query, entityClass);
             if (value != null) {
                 typedQuery.setParameter("value", value);
             }
 
-            // Lấy kết quả duy nhất
             return typedQuery.getSingleResult();
         } catch (NoResultException e) {
             LOGGER.log(Level.WARNING, "No entity found with attribute: " + attributeName + " and value: " + value);
             return null;
         } catch (NonUniqueResultException e) {
             LOGGER.log(Level.SEVERE, "Multiple entities found for attribute: " + attributeName + " and value: " + value, e);
-            throw e; // Nếu cần, bạn có thể ném ngoại lệ ra ngoài để xử lý
+            throw e;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error finding entity by attribute: " + attributeName + " and value: " + value, e);
             return null;
+        } finally {
+            em.close();
         }
     }
 
     protected boolean existsByAttribute(String attributeName, Object value) {
-        // Xây dựng câu truy vấn JPQL
+        EntityManager em = getEntityManager();
         String query = "SELECT COUNT(e) FROM " + entityClass.getSimpleName() + " e WHERE ";
         if (value == null) {
             query += "e." + attributeName + " IS NULL";
@@ -161,19 +159,18 @@ public abstract class AbstractDAO<T> implements GenericDAO<T> {
         }
 
         try {
-            var typedQuery = entityManager.createQuery(query, Long.class);
-
-            // Chỉ set tham số nếu giá trị không phải null
+            TypedQuery<Long> typedQuery = em.createQuery(query, Long.class);
             if (value != null) {
                 typedQuery.setParameter("value", value);
             }
 
-            // Lấy số lượng và kiểm tra có tồn tại hay không
             Long count = typedQuery.getSingleResult();
             return count > 0;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error checking existence of entity with attribute: " + attributeName + " and value: " + value, e);
             return false;
+        } finally {
+            em.close();
         }
     }
 

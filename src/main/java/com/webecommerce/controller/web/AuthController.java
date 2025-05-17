@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
@@ -38,8 +39,6 @@ public class AuthController extends HttpServlet {
     @Inject
     private IAccountService accountService;
 //    ResourceBundle resourceBundle = ResourceBundle.getBundle("message");
-
-
 
     @Inject
     private ICartItemService cartItemService;
@@ -72,10 +71,16 @@ public class AuthController extends HttpServlet {
             String message = request.getParameter("message");
             String alert = request.getParameter("alert");
             String link = request.getParameter("link");
-            if (message != null && alert != null) {
-                request.setAttribute("message", resourceBundle.getString(message));
-                request.setAttribute("alert", alert);
-                request.setAttribute("link", link);
+            if (message != null && alert != null && message.length() <= 50) {
+                try {
+                    request.setAttribute("message", resourceBundle.getString(message));
+                    request.setAttribute("alert", alert);
+                    request.setAttribute("link", link);
+                } catch (MissingResourceException e) {
+                    System.err.println("Không tìm thấy khóa message: " + message);
+                    request.setAttribute("message", "Lỗi không xác định");
+                    request.setAttribute("alert", "danger");
+                }
             }
             request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
         } else if (action != null && (action.equals("verify"))) {
@@ -95,6 +100,7 @@ public class AuthController extends HttpServlet {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         String action = request.getParameter("action");
+
         CheckOutRequestDTO checkOutRequestDTO =(CheckOutRequestDTO) session.getAttribute("orderNotHandler");
         if(action != null && action.equals("login")) {
             AccountRequest account = FormUtils.toModel(AccountRequest.class, request);

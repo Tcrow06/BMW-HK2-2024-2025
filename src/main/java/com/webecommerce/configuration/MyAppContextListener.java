@@ -1,21 +1,26 @@
 package com.webecommerce.configuration;
 
+import com.webecommerce.utils.HibernateUtil;
+import com.zaxxer.hikari.HikariDataSource;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
+import javax.sql.DataSource;
 
-@WebListener
+@WebListener // nếu dùng annotation, hoặc khai báo trong web.xml
 public class MyAppContextListener implements ServletContextListener {
+
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        // Có thể để trống hoặc code khởi tạo
+        // Log nếu cần
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        AbandonedConnectionCleanupThread.checkedShutdown();
+        // Khi ứng dụng dừng (Tomcat stop hoặc reload), dọn tài nguyên
+        HibernateUtil.shutdown();
     }
 }
 

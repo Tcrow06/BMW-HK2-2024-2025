@@ -9,9 +9,13 @@ import com.webecommerce.entity.people.CustomerEntity;
 import com.webecommerce.mapper.ICustomerMapper;
 import com.webecommerce.service.ICustomerService;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.List;
 
+@Named
+@ApplicationScoped
 public class CustomerService implements ICustomerService {
 
     @Inject

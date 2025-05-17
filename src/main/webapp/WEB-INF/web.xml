@@ -8,6 +8,7 @@
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
 
+
   <listener>
     <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
   </listener>
@@ -49,4 +50,21 @@
 <!--    </jsp-property-group>-->
 <!--  </jsp-config>-->
 
+
+  <filter>
+    <filter-name>HttpSecurityHeadersFilter</filter-name>
+    <filter-class>org.apache.catalina.filters.HttpHeaderSecurityFilter</filter-class>
+    <init-param>
+      <param-name>antiClickJackingOption</param-name>
+      <param-value>DENY</param-value>
+    </init-param>
+    <init-param>
+      <param-name>blockContentTypeSniffingEnabled</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>HttpSecurityHeadersFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 </web-app>

@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.webecommerce.constant.EnumRole;
 import com.webecommerce.dto.response.people.CustomerResponse;
 import com.webecommerce.dto.response.people.UserResponse;
+import com.webecommerce.service.ICustomerService;
 import com.webecommerce.service.IOwnerService;
 import com.webecommerce.service.impl.CustomerService;
 import com.webecommerce.utils.JWTUtil;
@@ -17,11 +18,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter("/loginFilter")
+//@WebFilter("/loginFilter")
 public class AuthorizationFilter implements Filter {
 
     @Inject
-    private CustomerService customerService;
+    private ICustomerService customerService;
 
     @Inject
     private IOwnerService ownerService;
