@@ -40,14 +40,15 @@
             <property name="hibernate.use_sql_comments" value="true"/>
 
             <property name="hibernate.hikari.dataSourceClassName" value="com.mysql.cj.jdbc.MysqlDataSource" />
-            <property name="hibernate.hikari.dataSource.url" value="jdbc:mysql://mysql:3300/WebCuoiKy?useSSL=false&amp;serverTimezone=UTC" />
+            <property name="hibernate.hikari.dataSource.url" value="jdbc:mysql://mysql:3306/WebCuoiKy" />
             <property name="hibernate.hikari.dataSource.user" value="root" />
             <property name="hibernate.hikari.dataSource.password" value="1234" />
-            <property name="hibernate.hikari.maximumPoolSize" value="5" />
+            <property name="hibernate.hikari.maximumPoolSize" value="10" />
             <property name="hibernate.hikari.minimumIdle" value="2" />
+
             <property name="hibernate.hikari.idleTimeout" value="30000" />
             <property name="hibernate.hikari.maxLifetime" value="1800000" />
-            <property name="hibernate.hikari.connectionTimeout" value="60000" />
+            <property name="hibernate.hikari.connectionTimeout" value="120000" />
             <property name="hibernate.hikari.connectionTestQuery" value="SELECT 1" />
 
 

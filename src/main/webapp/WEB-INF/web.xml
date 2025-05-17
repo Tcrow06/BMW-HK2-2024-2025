@@ -38,6 +38,10 @@
     <location>/views/web/error-404.jsp</location>
   </error-page>
 
+  <listener>
+    <listener-class>com.webecommerce.configuration.MyAppContextListener</listener-class>
+</listener>
+
 <!--  <jsp-config>-->
 <!--    <jsp-property-group>-->
 <!--      <url-pattern>/*</url-pattern>-->
