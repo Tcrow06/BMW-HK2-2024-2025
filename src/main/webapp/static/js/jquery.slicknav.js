@@ -147,7 +147,6 @@
             // if a list item has a nested menu
             if (data.children.length > 0) {
 
-                // select all text before the child menu
                 // check for anchors
 
                 var a = item.contents(),

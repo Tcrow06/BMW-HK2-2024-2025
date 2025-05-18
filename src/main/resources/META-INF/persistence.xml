@@ -48,7 +48,7 @@
 
             <property name="hibernate.hikari.idleTimeout" value="30000" />
             <property name="hibernate.hikari.maxLifetime" value="1800000" />
-            <property name="hibernate.hikari.connectionTimeout" value="120000" />
+            <property name="hibernate.hikari.connectionTimeout" value="1200000" />
             <property name="hibernate.hikari.connectionTestQuery" value="SELECT 1" />
 
 
