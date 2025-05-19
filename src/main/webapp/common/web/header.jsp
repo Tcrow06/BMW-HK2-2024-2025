@@ -231,7 +231,16 @@
                 <nav class="header__menu mobile-menu">
                     <ul>
                         <li class="active"><a href="<c:url value="/trang-chu"/>">Trang chủ</a></li>
-                        <li><a href="<c:url value="/danh-sach-san-pham?page=1&maxPageItem=9"/>">Thời trang</a></li>
+<%--                        <li><a href="<c:url value="/danh-sach-san-pham?page=1&maxPageItem=9"/>">Thời trang</a></li>--%>
+                        <li>
+                            <a href="<c:url value="/danh-sach-san-pham">
+                                <c:param name="page" value="1"/>
+                                <c:param name="maxPageItem" value="9"/>
+                            </c:url>">
+                                Thời trang
+                            </a>
+                        </li>
+
                         <li><a href="<c:url value="/blog"/>">Bài viết</a></li>
                         <li><a href="<c:url value="/ve-chung-toi"/>">Liên hệ</a></li>
                     </ul>

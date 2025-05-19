@@ -21,6 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static com.webecommerce.utils.StringUtils.sanitizeInput;
+import static com.webecommerce.utils.StringUtils.sanitizeXsltInput;
+
 @WebServlet(urlPatterns = {"/danh-sach-san-pham"})
 public class ProductController extends HttpServlet {
 
@@ -33,44 +36,86 @@ public class ProductController extends HttpServlet {
         List<String> listNames = productService.getAllProductName();
         ProductDTO product = new ProductDTO();
 
-        String category = request.getParameter("category");
-        String brand = request.getParameter("brand");
-        int page = Integer.parseInt(request.getParameter("page"));
-        int maxPageItem = Integer.parseInt(request.getParameter("maxPageItem"));
-        String minPriceStr = (request.getParameter("minPrice"));
-        String maxPriceStr = request.getParameter("maxPrice");
-        String tag = request.getParameter("tag");
-        String sort = request.getParameter("sort");
+        String brand = sanitizeXsltInput(request.getParameter("brand"));
 
-        String searchName = request.getParameter("ten");
+        int page = 1; // Giá trị mặc định
+        String pageParam = sanitizeInput(request.getParameter("page"));
+        if (pageParam != null && pageParam.matches("^\\d+$")) {
+            try {
+                page = Integer.parseInt(pageParam);
+                if (page < 1) page = 1;
+            } catch (NumberFormatException e) {
+                System.out.println(String.format("Invalid page: %s", pageParam));
+            }
+        }
+
+        int maxPageItem = 10; // Giá trị mặc định
+        String maxPageItemParam = sanitizeXsltInput(request.getParameter("maxPageItem"));
+        if (maxPageItemParam != null && maxPageItemParam.matches("^\\d+$")) {
+            try {
+                maxPageItem = Integer.parseInt(maxPageItemParam);
+            } catch (NumberFormatException e) {
+                System.out.println(String.format("Invalid maxPageItem: %s", maxPageItemParam));
+            }
+        }
+
+
+        String tag = sanitizeInput(request.getParameter("tag"));
+        String sort = sanitizeInput(request.getParameter("sort"));
+        String searchName = sanitizeInput(request.getParameter("ten"));
 
         product.setPage(page);
         product.setMaxPageItem(maxPageItem);
 
+
+
+//        String categoryParam = sanitizeXsltInput(request.getParameter("category"));
+        String categoryParam = (request.getParameter("category"));
+
         int categoryId = -1;
 
         try {
-            categoryId = Integer.parseInt(category);
+            categoryId = Integer.parseInt(categoryParam);
         }
         catch (NumberFormatException e) {
             System.out.println(e);
         }
 
-        double minPrice = Integer.MIN_VALUE;
-        double maxPrice = Integer.MAX_VALUE;
-        if(maxPriceStr != null && !maxPriceStr.isEmpty()) {
-            maxPrice = Double.parseDouble(maxPriceStr);
-        }
-        if(minPriceStr != null && !minPriceStr.isEmpty()) {
+//        int categoryId = -1; // Giá trị mặc định
+//        if (categoryParam == null || !categoryParam.matches("^[a-zA-Z0-9_-]+$")) {
+//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid category");
+//            return;
+//        }
+//        try {
+//            if (!categoryParam.isEmpty() && categoryParam.matches("^\\d+$")) {
+//                categoryId = Integer.parseInt(categoryParam);
+//                if (categoryId < 1 || categoryId > 1000) {
+//                    categoryId = -1; // Reset nếu ngoài giới hạn
+//                }
+//            }
+//        } catch (NumberFormatException e) {
+//            System.out.println(String.format("Invalid category: %s", categoryParam));
+//        }
+
+
+        double minPrice = Integer.MIN_VALUE; // Giá trị mặc định
+        double maxPrice = Integer.MAX_VALUE; // Giá trị mặc định
+        String minPriceStr = sanitizeInput(request.getParameter("minPrice"));
+        String maxPriceStr = sanitizeInput(request.getParameter("maxPrice"));
+
+        if (minPriceStr != null && minPriceStr.matches("^\\d+(\\.\\d+)?$")) {
             minPrice = Double.parseDouble(minPriceStr);
         }
+        if (maxPriceStr != null && maxPriceStr.matches("^\\d+(\\.\\d+)?$")) {
+            maxPrice = Double.parseDouble(maxPriceStr);
+        }
 
-        if(sort != null) {
+        if (sort != null) {
             product.setSortBy(sort);
         }
 
 
-        Pageable pageable =new PageRequest(product.getPage(), product.getMaxPageItem(), new FilterProduct(categoryId, brand, tag),
+        Pageable pageable = new PageRequest(product.getPage(), product.getMaxPageItem(), new FilterProduct(categoryId, brand, tag),
                 new FilterProductVariant(minPrice, maxPrice), new Sorter(product.getSortBy()));
 
 
@@ -91,7 +136,7 @@ public class ProductController extends HttpServlet {
         request.setAttribute(ModelConstant.MODEL2, productService.getBrands());
         request.setAttribute(ModelConstant.MODEL1, categoryService.findAll());
 
-        request.setAttribute(ModelConstant.MODEL,product);
+        request.setAttribute(ModelConstant.MODEL, product);
         request.setAttribute("listNames", listNames);
         request.getRequestDispatcher("/views/web/product-list.jsp").forward(request, response);
     }
