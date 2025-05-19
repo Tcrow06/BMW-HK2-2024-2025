@@ -34,10 +34,8 @@
     </div>
 
 <script>
-    // Lấy URL hiện tại
     const currentUrl = window.location.href;
 
-    // Cập nhật action của form để trỏ đến URL hiện tại
     const form = document.getElementById('verify-form');
     form.action = currentUrl;
 </script>

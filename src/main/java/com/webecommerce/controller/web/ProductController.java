@@ -1,8 +1,6 @@
 package com.webecommerce.controller.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webecommerce.constant.ModelConstant;
-import com.webecommerce.dao.product.IProductDAO;
 import com.webecommerce.dto.ProductDTO;
 import com.webecommerce.filter.FilterProduct;
 import com.webecommerce.filter.FilterProductVariant;
@@ -11,6 +9,8 @@ import com.webecommerce.paging.Pageable;
 import com.webecommerce.service.ICategoryService;
 import com.webecommerce.service.IProductService;
 import com.webecommerce.sort.Sorter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -27,11 +27,15 @@ import static com.webecommerce.utils.StringUtils.sanitizeXsltInput;
 @WebServlet(urlPatterns = {"/danh-sach-san-pham"})
 public class ProductController extends HttpServlet {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+
     @Inject
     private IProductService productService;
+
     @Inject
     private ICategoryService categoryService;
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<String> listNames = productService.getAllProductName();
         ProductDTO product = new ProductDTO();
@@ -63,6 +67,18 @@ public class ProductController extends HttpServlet {
         String tag = sanitizeInput(request.getParameter("tag"));
         String sort = sanitizeInput(request.getParameter("sort"));
         String searchName = sanitizeInput(request.getParameter("ten"));
+
+        if (sort != null && !isValidSort(sort)) {
+            sort = null; // Chỉ chấp nhận các giá trị sort hợp lệ
+        }
+
+        // Vệ sinh searchName
+        if (searchName != null && !searchName.isEmpty()) {
+            searchName = searchName.trim();
+            if (searchName.length() > 100) {
+                searchName = searchName.substring(0, 100); // Giới hạn độ dài
+            }
+        }
 
         product.setPage(page);
         product.setMaxPageItem(maxPageItem);
@@ -139,5 +155,13 @@ public class ProductController extends HttpServlet {
         request.setAttribute(ModelConstant.MODEL, product);
         request.setAttribute("listNames", listNames);
         request.getRequestDispatcher("/views/web/product-list.jsp").forward(request, response);
+    }
+
+    // Hàm kiểm tra giá trị sort hợp lệ
+    private boolean isValidSort(String sort) {
+        if (sort == null) return false;
+        // Chỉ cho phép các giá trị sort được định nghĩa trước
+        return sort.equals("price-asc") || sort.equals("price-desc") ||
+                sort.equals("name-asc") || sort.equals("name-desc");
     }
 }

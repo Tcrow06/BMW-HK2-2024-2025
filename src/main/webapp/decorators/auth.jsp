@@ -159,7 +159,6 @@
 
 <script type="text/javascript">
     (function() {
-        // Check if action is 'register' from the query string
         let urlParams = new URLSearchParams(window.location.search);
         let action = urlParams.get('action');
 
