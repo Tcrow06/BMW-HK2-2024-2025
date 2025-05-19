@@ -21,6 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static com.webecommerce.utils.StringUtils.sanitizeInput;
+import static com.webecommerce.utils.StringUtils.sanitizeXsltInput;
+
 @WebServlet(urlPatterns = {"/danh-sach-san-pham"})
 public class ProductController extends HttpServlet {
 
@@ -34,138 +37,124 @@ public class ProductController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            // Lấy danh sách tên sản phẩm
-            List<String> listNames = productService.getAllProductName();
-            ProductDTO product = new ProductDTO();
+        List<String> listNames = productService.getAllProductName();
+        ProductDTO product = new ProductDTO();
 
-            // Lấy và xác thực tham số
-            String category = request.getParameter("category");
-            String brand = request.getParameter("brand");
-            String pageStr = request.getParameter("page");
-            String maxPageItemStr = request.getParameter("maxPageItem");
-            String minPriceStr = request.getParameter("minPrice");
-            String maxPriceStr = request.getParameter("maxPrice");
-            String tag = request.getParameter("tag");
-            String sort = request.getParameter("sort");
-            String searchName = request.getParameter("ten");
+        String brand = sanitizeXsltInput(request.getParameter("brand"));
 
-            // Xác thực và đặt giá trị mặc định cho page
-            int page = 1;
+        int page = 1; // Giá trị mặc định
+        String pageParam = sanitizeInput(request.getParameter("page"));
+        if (pageParam != null && pageParam.matches("^\\d+$")) {
             try {
-                if (pageStr != null && !pageStr.isEmpty()) {
-                    page = Integer.parseInt(pageStr);
-                    if (page < 1) {
-                        page = 1; // Đảm bảo page không âm
-                    }
-                }
+                page = Integer.parseInt(pageParam);
+                if (page < 1) page = 1;
             } catch (NumberFormatException e) {
-                logger.warn("Invalid page parameter: {}", pageStr);
-                page = 1;
+                System.out.println(String.format("Invalid page: %s", pageParam));
             }
-
-            // Xác thực và đặt giá trị mặc định cho maxPageItem
-            int maxPageItem = 9;
-            try {
-                if (maxPageItemStr != null && !maxPageItemStr.isEmpty()) {
-                    maxPageItem = Integer.parseInt(maxPageItemStr);
-                    if (maxPageItem < 1 || maxPageItem > 100) {
-                        maxPageItem = 9; // Giới hạn maxPageItem
-                    }
-                }
-            } catch (NumberFormatException e) {
-                logger.warn("Invalid maxPageItem parameter: {}", maxPageItemStr);
-                maxPageItem = 9;
-            }
-
-            // Xác thực categoryId
-            int categoryId = -1;
-            try {
-                if (category != null && !category.isEmpty()) {
-                    categoryId = Integer.parseInt(category);
-                    if (categoryId < 0) {
-                        categoryId = -1; // Đặt lại nếu không hợp lệ
-                    }
-                }
-            } catch (NumberFormatException e) {
-                logger.warn("Invalid category parameter: {}", category);
-            }
-
-            // Xác thực minPrice và maxPrice
-            double minPrice = 0;
-            double maxPrice = Double.MAX_VALUE;
-            try {
-                if (minPriceStr != null && !minPriceStr.isEmpty()) {
-                    minPrice = Double.parseDouble(minPriceStr);
-                    if (minPrice < 0) {
-                        minPrice = 0; // Giá không âm
-                    }
-                }
-                if (maxPriceStr != null && !maxPriceStr.isEmpty()) {
-                    maxPrice = Double.parseDouble(maxPriceStr);
-                    if (maxPrice < minPrice) {
-                        maxPrice = Double.MAX_VALUE; // Đảm bảo maxPrice hợp lý
-                    }
-                }
-            } catch (NumberFormatException e) {
-                logger.warn("Invalid price parameters: minPrice={}, maxPrice={}", minPriceStr, maxPriceStr);
-            }
-
-            // Xác thực sort
-            if (sort != null && !isValidSort(sort)) {
-                sort = null; // Chỉ chấp nhận các giá trị sort hợp lệ
-            }
-
-            // Vệ sinh searchName
-            if (searchName != null && !searchName.isEmpty()) {
-                searchName = searchName.trim();
-                if (searchName.length() > 100) {
-                    searchName = searchName.substring(0, 100); // Giới hạn độ dài
-                }
-            }
-
-            // Thiết lập ProductDTO
-            product.setPage(page);
-            product.setMaxPageItem(maxPageItem);
-            if (sort != null) {
-                product.setSortBy(sort);
-            }
-
-            // Tạo Pageable
-            Pageable pageable = new PageRequest(
-                    product.getPage(),
-                    product.getMaxPageItem(),
-                    new FilterProduct(categoryId, brand, tag),
-                    new FilterProductVariant(minPrice, maxPrice),
-                    new Sorter(product.getSortBy())
-            );
-
-            // Lấy danh sách sản phẩm
-            List<ProductDTO> productDTOList;
-            if (searchName != null && !searchName.isEmpty()) {
-                productDTOList = productService.findAllByName(pageable, searchName);
-            } else {
-                productDTOList = productService.findAll(pageable);
-            }
-            product.setResultList(productDTOList);
-
-            // Tính toán tổng số trang và mục
-            product.setTotalItem(productService.getTotalItems());
-            product.setTotalPage(productService.setTotalPage(product.getTotalItem(), product.getMaxPageItem()));
-
-            // Thiết lập thuộc tính request
-            request.setAttribute(ModelConstant.MODEL2, productService.getBrands());
-            request.setAttribute(ModelConstant.MODEL1, categoryService.findAll());
-            request.setAttribute(ModelConstant.MODEL, product);
-            request.setAttribute("listNames", listNames);
-
-            // Chuyển tiếp đến JSP
-            request.getRequestDispatcher("/views/web/product-list.jsp").forward(request, response);
-
-        } catch (Exception e) {
-            logger.error("Error processing product list", e);
-            response.sendRedirect("/danh-sach-san-pham?page=1&maxPageItem=9");
         }
+
+        int maxPageItem = 10; // Giá trị mặc định
+        String maxPageItemParam = sanitizeXsltInput(request.getParameter("maxPageItem"));
+        if (maxPageItemParam != null && maxPageItemParam.matches("^\\d+$")) {
+            try {
+                maxPageItem = Integer.parseInt(maxPageItemParam);
+            } catch (NumberFormatException e) {
+                System.out.println(String.format("Invalid maxPageItem: %s", maxPageItemParam));
+            }
+        }
+
+
+        String tag = sanitizeInput(request.getParameter("tag"));
+        String sort = sanitizeInput(request.getParameter("sort"));
+        String searchName = sanitizeInput(request.getParameter("ten"));
+
+        if (sort != null && !isValidSort(sort)) {
+            sort = null; // Chỉ chấp nhận các giá trị sort hợp lệ
+        }
+
+        // Vệ sinh searchName
+        if (searchName != null && !searchName.isEmpty()) {
+            searchName = searchName.trim();
+            if (searchName.length() > 100) {
+                searchName = searchName.substring(0, 100); // Giới hạn độ dài
+            }
+        }
+
+        product.setPage(page);
+        product.setMaxPageItem(maxPageItem);
+
+
+
+//        String categoryParam = sanitizeXsltInput(request.getParameter("category"));
+        String categoryParam = (request.getParameter("category"));
+
+        int categoryId = -1;
+
+        try {
+            categoryId = Integer.parseInt(categoryParam);
+        }
+        catch (NumberFormatException e) {
+            System.out.println(e);
+        }
+
+//        int categoryId = -1; // Giá trị mặc định
+//        if (categoryParam == null || !categoryParam.matches("^[a-zA-Z0-9_-]+$")) {
+//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid category");
+//            return;
+//        }
+//        try {
+//            if (!categoryParam.isEmpty() && categoryParam.matches("^\\d+$")) {
+//                categoryId = Integer.parseInt(categoryParam);
+//                if (categoryId < 1 || categoryId > 1000) {
+//                    categoryId = -1; // Reset nếu ngoài giới hạn
+//                }
+//            }
+//        } catch (NumberFormatException e) {
+//            System.out.println(String.format("Invalid category: %s", categoryParam));
+//        }
+
+
+        double minPrice = Integer.MIN_VALUE; // Giá trị mặc định
+        double maxPrice = Integer.MAX_VALUE; // Giá trị mặc định
+        String minPriceStr = sanitizeInput(request.getParameter("minPrice"));
+        String maxPriceStr = sanitizeInput(request.getParameter("maxPrice"));
+
+        if (minPriceStr != null && minPriceStr.matches("^\\d+(\\.\\d+)?$")) {
+            minPrice = Double.parseDouble(minPriceStr);
+        }
+        if (maxPriceStr != null && maxPriceStr.matches("^\\d+(\\.\\d+)?$")) {
+            maxPrice = Double.parseDouble(maxPriceStr);
+        }
+
+        if (sort != null) {
+            product.setSortBy(sort);
+        }
+
+
+        Pageable pageable = new PageRequest(product.getPage(), product.getMaxPageItem(), new FilterProduct(categoryId, brand, tag),
+                new FilterProductVariant(minPrice, maxPrice), new Sorter(product.getSortBy()));
+
+
+        List<ProductDTO> productDTOList = productService.findAll(pageable);
+        if (searchName != null && !searchName.isEmpty()) {
+            productDTOList = productService.findAllByName(pageable, searchName);
+        }
+        product.setResultList(productDTOList);
+
+        //nháp
+
+        product.setTotalItem(productService.getTotalItems());
+
+        //hết nháp
+        product.setTotalPage(productService.setTotalPage(product.getTotalItem(),
+                product.getMaxPageItem()));
+
+        request.setAttribute(ModelConstant.MODEL2, productService.getBrands());
+        request.setAttribute(ModelConstant.MODEL1, categoryService.findAll());
+
+        request.setAttribute(ModelConstant.MODEL, product);
+        request.setAttribute("listNames", listNames);
+        request.getRequestDispatcher("/views/web/product-list.jsp").forward(request, response);
     }
 
     // Hàm kiểm tra giá trị sort hợp lệ

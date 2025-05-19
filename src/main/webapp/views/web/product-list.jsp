@@ -305,7 +305,10 @@
 
     <script>
         document.getElementById("add-to-cart btn").addEventListener("click", function() {
-            window.location.href = "/danh-sach-san-pham?page=1&maxPageItem=9";
+            // window.location.href = "/danh-sach-san-pham?page=1&maxPageItem=9";
+            const page = 1;
+            const maxPageItem = 9;
+            window.location.href = `/danh-sach-san-pham?page=${page}&maxPageItem=${maxPageItem}`;
         });
     </script>
 
@@ -739,7 +742,13 @@
             event.preventDefault();
             let name = document.getElementById('search-product').value;
             selectName(name);
-            window.location.href = '/danh-sach-san-pham?page=1&maxPageItem=9&ten=' + encodeURIComponent(name);
+            // window.location.href = '/danh-sach-san-pham?page=1&maxPageItem=9&ten=' + encodeURIComponent(name);
+            const params = new URLSearchParams({
+                page: 1,
+                maxPageItem: 9,
+                ten: name.trim()
+            });
+            window.location.href = `/danh-sach-san-pham?${params.toString()}`;
         }
     });
 
@@ -749,8 +758,12 @@
         e.preventDefault();
         let name = document.getElementById('search-product').value;
         selectName(name);
-        window.location.href = '/danh-sach-san-pham?page=1&maxPageItem=9&ten=' + encodeURIComponent(name);
-
+        const params = new URLSearchParams({
+            page: 1,
+            maxPageItem: 9,
+            ten: name.trim()
+        });
+        window.location.href = `/danh-sach-san-pham?${params.toString()}`;
     });
 
 </script>
