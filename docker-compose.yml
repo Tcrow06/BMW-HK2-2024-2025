@@ -13,15 +13,14 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./webck.sql:/docker-entrypoint-initdb.d/webck.sql
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=caching_sha2_password
     networks:
       - my_network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-p1234" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
-
 
   redis:
     image: redis:7.4.1-alpine
@@ -32,7 +31,7 @@ services:
     networks:
       - my_network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,12 +41,10 @@ services:
     container_name: my_java_app_14
     restart: always
     depends_on:
-      mysql:
-        condition: service_healthy
-      redis :
-        condition: service_started
+      - mysql
+      - redis
     environment:
-      MYSQL_URL: "jdbc:mysql://mysql:3306/WebCuoiKy"
+      MYSQL_URL: "jdbc:mysql://mysql:3306/WebCuoiKy?useSSL=false&serverTimezone=UTC"
       MYSQL_USERNAME: "root"
       MYSQL_PASSWORD: "1234"
       REDIS_HOST: "redis"

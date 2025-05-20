@@ -1,21 +1,34 @@
+# Stage 1: Build WAR
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
+
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+
+RUN mvn clean package -DskipTests
+
+# Stage 2: Setup Tomcat
 FROM tomcat:8.5-jdk21
 
-# Copy war file ứng dụng
-COPY target/FashionWebEcommerce.war /usr/local/tomcat/webapps/ROOT.war
+# Cài đặt MySQL client tools
+RUN apt-get update && \
+    apt-get install -y mariadb-client && \
+    apt-get install -y dos2unix bash && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy script tạo keystore
+COPY --from=builder /app/target/FashionWebEcommerce.war /usr/local/tomcat/webapps/ROOT.war
+
 COPY generate-keystore.sh /tmp/generate-keystore.sh
 
-# Cấp quyền chạy cho script
-RUN chmod +x /tmp/generate-keystore.sh
+RUN dos2unix /tmp/generate-keystore.sh && \
+    chmod +x /tmp/generate-keystore.sh && \
+    bash /tmp/generate-keystore.sh
 
-# Chạy script tạo keystore
-RUN /tmp/generate-keystore.sh
-
-# Copy server.xml cấu hình ssl (server.xml bạn chuẩn bị sẵn, dùng keystore ở /usr/local/tomcat/ssl/keystore.p12)
 COPY server.xml /usr/local/tomcat/conf/server.xml
 
 EXPOSE 8080 8443
 
-
-CMD ["catalina.sh", "run"]
+COPY wait-for-mysql.sh /wait-for-mysql.sh
+RUN dos2unix /wait-for-mysql.sh && chmod +x /wait-for-mysql.sh
+CMD ["/wait-for-mysql.sh", "catalina.sh", "run"]
