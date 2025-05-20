@@ -22,8 +22,7 @@
 </style>
 
 <link rel="stylesheet" href="/static/web/css/return-order.css" type="text/css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" integrity="sha256-H1Ft2A7EmjxJgn+YpiRX+B1/pixqC12iBTjvJEDlA3Y=" crossorigin="anonymous"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" integrity="sha256-2cF8LEvY4Y6qbBpy0hsBqgplu9hdPTfMw9in7pBNdww=" crossorigin="anonymous"></script>
 
 <!-- Breadcrumb Section Begin -->
 <section class="breadcrumb-blog set-bg" data-setbg="/static/web/img/bg-return-order.jpg">

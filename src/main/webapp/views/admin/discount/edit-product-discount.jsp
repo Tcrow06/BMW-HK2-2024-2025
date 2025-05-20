@@ -7,8 +7,7 @@
     }
 </style>
 
-<%--<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>--%>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="<c:url value="/static/js/jquery-3.6.0.min.js"/>"></script>
 
 <div class="content">
     <div class="page-header">

@@ -15,11 +15,10 @@
 <%--  <link rel="stylesheet" href="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>"
         integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMPhuv1De4VfM1g2B1iI4+6jCW51e7no4mr10s5"
         crossorigin="anonymous">--%>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
 
   <!-- jQuery -->
-  <script src="<c:url value="https://code.jquery.com/jquery-3.6.0.min.js"/>"></script>
+  <script src="<c:url value="/static/js/jquery-3.6.0.min.js"/>"></script>
 
   <!-- Bootstrap -->
   <link href="<c:url value="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -28,8 +27,7 @@
           crossorigin="anonymous"></script>
 
   <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" integrity="sha256-o+B/z7WS82P1Fdq6HbOoOMuyyTs99/JranvAr2IlUGM=" crossorigin="anonymous">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="<c:url value='/static/css/bootstrap.min.css'/>" type="text/css">
   <link rel="stylesheet" href="<c:url value='/static/css/font-awesome.min.css'/>" type="text/css">
@@ -43,7 +41,7 @@
   <!-- Additional Scripts -->
   <script src="<c:url value='/template/paging/jquery.twbsPagination.js' />"></script>
   <script src="<c:url value='/static/web/js/token/refreshToken.js'/> "></script>
-  <script src="<c:url value="https://cdn.jsdelivr.net/npm/sweetalert2@11"/>"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" integrity="sha256-2cF8LEvY4Y6qbBpy0hsBqgplu9hdPTfMw9in7pBNdww=" crossorigin="anonymous"></script>
 </head>
 
 <body>

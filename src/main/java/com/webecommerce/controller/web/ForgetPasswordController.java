@@ -29,6 +29,11 @@ public class ForgetPasswordController extends HttpServlet {
         String action = request.getParameter("action");
         String message = request.getParameter("message");
         String alert = request.getParameter("alert");
+
+        if ((message != null && message.length() >=100) || (alert != null && alert.length() >=100)){
+            response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify" +"&message=khong-xac-dinh&alert=danger");
+            return;
+        }
         if (message != null && alert != null) {
             request.setAttribute("message", resourceBundle.getString(message));
             request.setAttribute("alert", alert);
@@ -48,9 +53,15 @@ public class ForgetPasswordController extends HttpServlet {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         String action = request.getParameter("action");
+        String otp = request.getParameter("otp");
+        String id = request.getParameter("id");
+
+        if((id!=null && id.length() > 50 )|| (otp != null && otp.length() > 50)|| (action != null && action.length() >= 20)){
+            response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify" +"&message=khong-xac-dinh&alert=danger");
+            return;
+        }
         if (action != null && action.equals("verify")) {
-            String otp = request.getParameter("otp");
-            String id = request.getParameter("id");
+
             int count = accountService.verifyOTP(id, otp);
             if (count == 0) {
                 response.sendRedirect(request.getContextPath() + "/quen-mat-khau?action=set_password&id=" + id + "&message=verify_success&alert=success");
@@ -61,7 +72,6 @@ public class ForgetPasswordController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + id +"&message=verify_retry&alert=danger");
             }
         } else if (action != null && action.equals("set_password")) {
-            String id = request.getParameter("id");
             String password = request.getParameter("password");
             String repassword = request.getParameter("repassword");
             if (!password.equals(repassword)) {
@@ -74,7 +84,6 @@ public class ForgetPasswordController extends HttpServlet {
         else {
             String email = request.getParameter("email");
             String username = request.getParameter("username");
-
             boolean exists = accountService.existsUsernameAndEmail(username, email);
             if (!exists) {
                 response.sendRedirect(request.getContextPath() + "/quen-mat-khau?message=not_found_user&alert=danger");

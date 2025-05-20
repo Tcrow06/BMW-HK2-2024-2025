@@ -293,7 +293,7 @@
         </div>
     </div>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" integrity="sha256-2cF8LEvY4Y6qbBpy0hsBqgplu9hdPTfMw9in7pBNdww=" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function () {
         calculateTotalPrice();

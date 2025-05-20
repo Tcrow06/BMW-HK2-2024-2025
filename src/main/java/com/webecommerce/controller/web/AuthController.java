@@ -65,11 +65,15 @@ public class AuthController extends HttpServlet {
         if(send_direction!=null){
             session.setAttribute("send-direction",send_direction);
         }
-
+        String alert = request.getParameter("alert");
         String action = request.getParameter("action");
+        if ((alert != null&& alert.length() >= 50) || (action != null && action.length() >= 100) ){
+            response.sendRedirect(request.getContextPath() + "/dang-nhap?"+"message=khong-xac-dinh&alert=danger");
+            return;
+        }
         if (action != null && (action.equals("login") || (action.equals("register")))) {
             String message = request.getParameter("message");
-            String alert = request.getParameter("alert");
+
             String link = request.getParameter("link");
             if (message != null && alert != null && message.length() <= 50) {
                 try {
@@ -85,10 +89,17 @@ public class AuthController extends HttpServlet {
             request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
         } else if (action != null && (action.equals("verify"))) {
             String message = request.getParameter("message");
-            String alert = request.getParameter("alert");
-            if (message != null && alert != null) {
-                request.setAttribute("message", resourceBundle.getString(message));
-                request.setAttribute("alert", alert);
+            if (message != null && alert != null && message.length() <= 50) {
+
+                try {
+                    request.setAttribute("message", resourceBundle.getString(message));
+                    request.setAttribute("alert", alert);
+                }
+                catch (MissingResourceException e) {
+                        System.err.println("Không tìm thấy khóa message: " + message);
+                        request.setAttribute("message", "Lỗi không xác định");
+                        request.setAttribute("alert", "danger");
+                }
             }
             request.getRequestDispatcher("/views/web/enter-OTP.jsp").forward(request, response);
         }
@@ -100,8 +111,14 @@ public class AuthController extends HttpServlet {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         String action = request.getParameter("action");
-
         CheckOutRequestDTO checkOutRequestDTO =(CheckOutRequestDTO) session.getAttribute("orderNotHandler");
+
+        if ((action != null && action.length() >=100)){
+            response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify" +"&message=khong-xac-dinh&alert=danger");
+            return;
+        }
+
+
         if(action != null && action.equals("login")) {
             AccountRequest account = FormUtils.toModel(AccountRequest.class, request);
             String messageStr = accountService.checkLogin(account);
@@ -195,6 +212,16 @@ public class AuthController extends HttpServlet {
         } else if (action != null && action.equals("verify")) {
             String otp = request.getParameter("otp");
             String id = request.getParameter("id");
+            String alert = request.getParameter("alert");
+            String message = request.getParameter("message");
+            if((alert != null && alert.length() > 100)||(message != null && message.length() > 100)) {
+                response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&message=khong-xac-dinh&alert=danger");
+                return;
+            }
+            if((id!=null&&id.length() > 100)||(otp!=null && otp.length() >100)){
+                response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify" +"&message=khong-xac-dinh&alert=danger");
+                return;
+            }
             int count = accountService.verifyOTP(id, otp);
             if (count == 0) {
                 response.sendRedirect(request.getContextPath() + "/dang-nhap?action=login&message=verify_success&alert=success");

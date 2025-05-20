@@ -10,22 +10,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Male-Fashion | Template</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="<c:url value="/static/js/jquery-3.6.0.min.js"/>"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <!-- Google Font -->
-    <link href="<c:url value="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"/>"
-          rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" integrity="sha256-o+B/z7WS82P1Fdq6HbOoOMuyyTs99/JranvAr2IlUGM=" crossorigin="anonymous">
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="<c:url value="/static/css/bootstrap.min.css"/>" type="text/css">
-<<<<<<< HEAD
-    <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"/>"></script>
-=======
-    <%--    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>--%>
->>>>>>> b86e47164152e98bbdc9d49df6b936ed4affe25f
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js" integrity="sha256-CRWGUQGeXKjL9VbIAkPOgk9sfBKgdLuCp9KcogxmNo4=" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="<c:url value="/static/css/font-awesome.min.css"/>" type="text/css">
     <link rel="stylesheet" href="<c:url value="/static/css/elegant-icons.css"/>" type="text/css">
     <link rel="stylesheet" href="<c:url value="/static/css/magnific-popup.css"/>" type="text/css">
@@ -67,7 +64,7 @@
 <!-- Search End -->
 
 <!-- Js Plugins -->
-<script src="<c:url value="https://code.jquery.com/jquery-3.6.0.min.js"/>"></script>
+<script src="<c:url value="/static/js/jquery-3.6.0.min.js"/>"></script>
 <script src="<c:url value='/static/web/js/token/refreshToken.js'/> "></script>
 <script src="<c:url value="/static/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value="/static/js/jquery.nice-select.min.js"/>"></script>
