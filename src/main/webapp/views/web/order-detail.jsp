@@ -9,9 +9,9 @@
 <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
 <!-- SweetAlert2 CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" integrity="sha384-AnrijSOFszNO4c6f3rs58LsVOvJotv0TnKu/7VaEwXiaevsXM8bFluKuJRV6gmzH" crossorigin="anonymous">
 <!-- SweetAlert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" integrity="sha384-/r5ie+XZL2fzZr0AqbodWFHeEJBwsC9hXwp2JtbUHN0YIVq17vrdjRlb5x9B2MUb" crossorigin="anonymous"></script>
 
 <style>
     /*.table-container {*/

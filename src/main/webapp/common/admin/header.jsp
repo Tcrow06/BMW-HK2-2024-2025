@@ -303,7 +303,7 @@
         </div>
     </div>
 
-    <script>
+    <script  nonce="${cspNonce}">
         document.addEventListener("DOMContentLoaded", () => {
             const chatButton = document.getElementById("chat-button");
             const chatBox = document.getElementById("chat-box");

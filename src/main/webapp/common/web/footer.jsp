@@ -53,7 +53,7 @@
                 <div class="footer__copyright__text">
                     <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     <p>Copyright ©
-                        <script>
+                        <script  nonce="${cspNonce}">
                             document.write(new Date().getFullYear());
                         </script>2020
                         All rights reserved
