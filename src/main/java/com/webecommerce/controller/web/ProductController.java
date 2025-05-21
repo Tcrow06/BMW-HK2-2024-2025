@@ -111,22 +111,26 @@ public class ProductController extends HttpServlet {
         // Xử lý tham số category
         String categoryParam = sanitizeXsltInput(request.getParameter("category"));
         int categoryId = -1; // Giá trị mặc định
-        if (categoryParam != null && categoryParam.matches("^\\d+$")) {
-            try {
-                categoryId = Integer.parseInt(categoryParam);
-                if (categoryId < 1 || categoryId > 1000) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid category ID");
+        if (categoryParam != null && !categoryParam.isEmpty()) { // Kiểm tra không rỗng
+            if (categoryParam.matches("^\\d+$")) {
+                try {
+                    categoryId = Integer.parseInt(categoryParam);
+                    if (categoryId < 1 || categoryId > 1000) {
+                        logger.warn("Invalid category ID: {}", categoryParam);
+                        // Chuyển hướng thay vì trả lỗi
+                        response.sendRedirect(request.getContextPath() + "/danh-sach-san-pham?page=1&maxPageItem=9");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid category format: {}", categoryParam);
+                    response.sendRedirect(request.getContextPath() + "/danh-sach-san-pham?page=1&maxPageItem=9");
                     return;
                 }
-            } catch (NumberFormatException e) {
-                logger.error("Invalid category: {}", categoryParam);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid category format");
+            } else {
+                logger.warn("Invalid category format: {}", categoryParam);
+                response.sendRedirect(request.getContextPath() + "/danh-sach-san-pham?page=1&maxPageItem=9");
                 return;
             }
-        } else if (categoryParam != null) {
-            logger.error("Invalid category format: {}", categoryParam);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid category format");
-            return;
         }
 
         // Xử lý tham số minPrice và maxPrice
