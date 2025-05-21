@@ -1,0 +1,93 @@
+
+.product__item__pic {
+    position: relative; /* Để chứa các thẻ con có position absolute */
+}
+
+.div_label_product {
+    position: absolute;
+    left: 10px;
+    font-size: 14px;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Nhãn Sale ở phía trên */
+.div_label_product:nth-child(1) {
+    top: 10px; /* Nhãn Sale nằm ở trên cùng */
+}
+
+/* Nhãn New ở phía dưới */
+.div_label_product:nth-child(2) {
+    top:40px; /* Nhãn New nằm ở dưới cùng */
+}
+
+.categories__hot__deal {
+    position: relative;
+}
+.hot__deal__sticker {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10; /* Giúp cho sticker nằm trên các thành phần khác */
+}
+
+.discounted-price {
+    text-decoration: line-through;  /* Gạch ngang */
+    font-size: 0.9em;               /* Giảm kích thước font */
+    color: gray;                   /* Làm mờ màu sắc */
+    opacity: 0.6;                  /* Làm mờ thêm */
+}
+.spad_style {
+    padding: 0px
+}
+.categories__hot__deal_div {
+    padding: 50px
+}
+.instagram__text_them {
+    padding: 0px
+}
+.spad_section_173 {
+    margin-top: 100px
+}
+.span_style_213 {
+    margin-top: 10px
+}
+
+/* static/js/web/home/home.css */
+.product__item__pic {
+    background-size: cover;
+    background-position: center;
+    background-image: var(--bg-image);
+}
+.sale-label {
+    background-color: #ff0000;
+    color: #fff;
+    padding: 5px 10px;
+}
+.new-label {
+    background-color: #00ff00;
+    color: #fff;
+    padding: 5px 10px;
+}
+.product__color__select label {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+.product__color__select label.active.black {
+    background-color: #000;
+}
+.product__color__select label.grey {
+    background-color: #ccc;
+}
+.hot__deal__sticker {
+    background-color: #ff0000;
+    color: #fff;
+    padding: 5px 10px;
+}
+.span_style_213 {
+    font-weight: bold;
+    color: #333;
+}

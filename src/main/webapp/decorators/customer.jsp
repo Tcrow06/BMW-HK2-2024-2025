@@ -26,6 +26,9 @@
           integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
           crossorigin="anonymous"></script>
 
+<%--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" integrity="sha384-9o2ZPa7kJ7uP87uQbKWGbC0l2r26eP1+3G4FFaN8O+8YdJuzf0TAR7rB1+GRwmkS" crossorigin="anonymous">--%>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" integrity="sha384-AnrijSOFszNO4c6f3rs58LsVOvJotv0TnKu/7VaEwXiaevsXM8bFluKuJRV6gmzH" crossorigin="anonymous">
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 

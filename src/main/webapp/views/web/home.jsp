@@ -6,49 +6,10 @@
 
 <%@ include file="../../common/web/banner.jsp"%>
 
-<style>
-    .product__item__pic {
-        position: relative; /* Để chứa các thẻ con có position absolute */
-    }
+<link rel="stylesheet" href="<c:url value='/static/js/web/home/home.css' />" />
 
-    .div_label_product {
-        position: absolute;
-        left: 10px;
-        font-size: 14px;
-        color: #fff;
-        padding: 5px 10px;
-        border-radius: 5px;
-    }
-
-    /* Nhãn Sale ở phía trên */
-    .div_label_product:nth-child(1) {
-        top: 10px; /* Nhãn Sale nằm ở trên cùng */
-    }
-
-    /* Nhãn New ở phía dưới */
-    .div_label_product:nth-child(2) {
-        top:40px; /* Nhãn New nằm ở dưới cùng */
-    }
-
-    .categories__hot__deal {
-        position: relative;
-    }
-    .hot__deal__sticker {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 10; /* Giúp cho sticker nằm trên các thành phần khác */
-    }
-
-    .discounted-price {
-        text-decoration: line-through;  /* Gạch ngang */
-        font-size: 0.9em;               /* Giảm kích thước font */
-        color: gray;                   /* Làm mờ màu sắc */
-        opacity: 0.6;                  /* Làm mờ thêm */
-    }
-
-</style>
 <!-- Product Section Begin -->
+<!-- Product Section -->
 <section class="product spad">
     <div class="container">
         <div class="row">
@@ -74,14 +35,12 @@
                 </c:if>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix ${saleNewClass}">
                     <div class="product__item sale">
-
-
-                        <div class="product__item__pic set-bg" data-setbg="<c:url value='/api-image?path=${item.photo}'/>">
+                        <div class="product__item__pic" data-bg-url="<c:url value='/api-image?path=${item.photo}'/>">
                             <c:if test="${item.productDiscount != null}">
-                                <div class="div_label_product"><span class="label">Sale_${item.productDiscount.discountPercentage}%</span></div>
+                                <div class="div_label_product"><span class="label sale-label">Sale_${item.productDiscount.discountPercentage}%</span></div>
                             </c:if>
                             <c:if test="${item.isNew}">
-                                <div class="div_label_product"><span class="label">New</span></div>
+                                <div class="div_label_product"><span class="label new-label">New</span></div>
                             </c:if>
                             <ul class="product__hover">
                                 <li><a href="#"><img src="<c:url value='/static/img/icon/heart.png'/>" alt=""></a></li>
@@ -91,7 +50,7 @@
                         </div>
                         <div class="product__item__text">
                             <h6>${item.name}</h6>
-                            <a href="<c:url value='san-pham?id=${item.id}'/> " class="add-cart">View Detail</a>
+                            <a href="<c:url value='san-pham?id=${item.id}'/>" class="add-cart">View Detail</a>
                             <div class="rating">
                                 <i class="fa fa-star-o"></i>
                                 <i class="fa fa-star-o"></i>
@@ -99,13 +58,11 @@
                                 <i class="fa fa-star-o"></i>
                                 <i class="fa fa-star-o"></i>
                             </div>
-<%--                            <h5>$ ${item.price}</h5>--%>
                             <h5>${item.getDiscountedPrice()}
                                 <c:if test="${item.productDiscount != null}">
                                     <span class="discounted-price">${item.price}</span>
                                 </c:if>
                             </h5>
-<%--                            đây nha--%>
                             <div class="product__color__select">
                                 <label for="pc-1">
                                     <input type="radio" id="pc-1">
@@ -150,12 +107,12 @@
                         <c:forEach var="item" items="${model}" varStatus="status">
                             <c:if test="${item.isOutStanding == true}">
                                 <div class="carousel-item ${isFirstActive == true ? 'active' : ''}">
-                                    <section class="instagram spad" style="padding: 0px">
+                                    <section class="instagram spad spad_style">
                                         <div class="container">
                                             <div class="row">
                                                 <div class="col-lg-8">
                                                     <div class="categories__hot__deal">
-                                                        <div style="padding: 50px">
+                                                        <div class="categories__hot__deal_div">
                                                             <c:set var="imageIndex" value="${status.index % 3}" />
                                                             <img src="<c:url value='/static/img/instagram/ig-${imageIndex}.jpg'/>" alt="">
                                                             <div class="hot__deal__sticker">
@@ -173,11 +130,11 @@
 
                                                         <span class="badge badge-${item.getBootstrapClassStatus()} rounded-pill d-inline">${item.getStatus()}</span>
 
-                                                        <div class="instagram__text" style="padding: 0">
+                                                        <div class=" instagram__text instagram__text_them">
                                                             <span>Bắt đầu vào ngày: </span>
                                                             <h2>${item.getStringStartDate()}</h2>
                                                         </div>
-                                                        <div class="instagram__text" style="padding: 0">
+                                                        <div class="instagram__text instagram__text_them" >
                                                             <span>Kết thúc vào ngày: </span>
                                                             <h2>${item.getStringEndDate()}</h2>
                                                         </div>
@@ -210,7 +167,7 @@
 </section>
 
 
-<section class="latest spad" style="margin-top: 100px">
+<section class="latest spad spad_section_173" >
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -250,7 +207,7 @@
                                                     <span>Giảm giá đặc biệt</span>
                                                     <h2>${item.name}</h2>
                                                     <h5>Giá gốc: $${item.price}</h5>
-                                                    <span style="margin-top: 10px">${item.productDiscount.discountPercentage}% giảm</span>
+                                                    <span class="span_style_213">${item.productDiscount.discountPercentage}% giảm</span>
                                                     <c:if test="${status.index == 0}">
                                                         <div class="categories__deal__countdown__timer" id="countdown">
                                                             <div class="cd-item">
@@ -272,7 +229,7 @@
                                                         </div>
                                                     </c:if>
                                                     <c:if test="${status.index != 0}">
-                                                        <div class="instagram__text" style="padding: 0">
+                                                        <div class="instagram__text instagram__text_them">
                                                             <span>Kết thúc vào ngày: </span>
                                                             <h2>${item.productDiscount.getStringEndDate()}</h2>
                                                         </div>
@@ -382,31 +339,8 @@
 <!-- Latest Blog Section End -->
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
-<script>
-    $(document).ready(function() {
-        $(".product__filter .mix").not(".sale").hide();
-    });
 
-</script>
+<script src="<c:url value='/static/js/web/home/home.js'/>"></script>
 
 
-<script>
-    const url = new URL(window.location.href);
-
-    const message = url.searchParams.get("message");
-    const alertType = url.searchParams.get("alert");
-
-    if (message && alertType) {
-        if(message==="not_permission_access"){
-            alert("Không được phép truy cập");
-        }
-        // Xóa các tham số từ URL
-        url.searchParams.delete("message");
-        url.searchParams.delete("alert");
-
-        // Chuyển hướng đến URL mới (không có tham số)
-        window.history.replaceState({}, document.title, url.pathname);
-
-    }
-</script>
 

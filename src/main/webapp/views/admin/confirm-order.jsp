@@ -51,7 +51,7 @@
     </div>
 </div>
 
-<script  nonce="${cspNonce}">
+<script>
     document.querySelectorAll('.submitBtn').forEach(button => {
         button.addEventListener('click', function () {
             const orderId = this.getAttribute('data-order-id');
