@@ -29,13 +29,13 @@ public class AccountDAO extends AbstractDAO<AccountEntity> implements IAccountDA
     private IAccountMapper accountMapper;
     private EntityManagerFactory entityManagerFactory;
     @Inject
-    private ICustomerMapper customerMapper ;
+    private ICustomerMapper customerMapper;
     @Inject
-    private IOwnerMapper ownerMapper ;
-
+    private IOwnerMapper ownerMapper;
 
     @PersistenceContext
     private EntityManager entityManager;
+
     public AccountDAO() {
         super(AccountEntity.class);
         this.entityManagerFactory = HibernateUtil.getEmFactory();
@@ -45,7 +45,7 @@ public class AccountDAO extends AbstractDAO<AccountEntity> implements IAccountDA
     @Override
     public UserResponse findByUserNameAndPasswordAndStatus(String userName, String password, String status) {
         UserResponse userResponse = new UserResponse();
-        String jpql = "SELECT a FROM AccountEntity a WHERE a.username = :username AND a.status = :status";
+        String sql = "SELECT * FROM account a WHERE a.username = ? AND a.status = ?";
 
         EnumAccountStatus accountStatus;
         try {
@@ -54,9 +54,9 @@ public class AccountDAO extends AbstractDAO<AccountEntity> implements IAccountDA
             return null;
         }
 
-        List<AccountEntity> resultList = entityManager.createQuery(jpql, AccountEntity.class)
-                .setParameter("username", userName)
-                .setParameter("status", accountStatus)
+        List<AccountEntity> resultList = entityManager.createNativeQuery(sql, AccountEntity.class)
+                .setParameter(1, userName)
+                .setParameter(2, accountStatus.toString())
                 .getResultList();
 
         if (resultList != null && !resultList.isEmpty()) {
@@ -64,8 +64,8 @@ public class AccountDAO extends AbstractDAO<AccountEntity> implements IAccountDA
             AccountResponse accountResponse = accountMapper.toAccountResponse(accountEntity);
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-//            nhớ xóa hàm dưới. đang test
-            if(accountResponse.getRole().equals("OWNER") && password.equals(accountEntity.getPassword())) {
+            // nhớ xóa hàm dưới. đang test
+            if (accountResponse.getRole().equals("OWNER") && password.equals(accountEntity.getPassword())) {
                 userResponse = ownerMapper.toOwnerResponse(accountEntity.getOwner());
                 return userResponse;
             }
@@ -84,40 +84,40 @@ public class AccountDAO extends AbstractDAO<AccountEntity> implements IAccountDA
 
     @Override
     public boolean existsByEmail(String email) {
-        String jpql = "SELECT COUNT(c) FROM CustomerEntity c WHERE c.email = :email";
-        Query query = entityManager.createQuery(jpql);
-        query.setParameter("email", email);
-        Long count = (Long) query.getSingleResult();
+        String sql = "SELECT COUNT(*) FROM customer c WHERE c.email = ?";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter(1, email);
+        Long count = ((Number) query.getSingleResult()).longValue();
         return count > 0;
     }
 
     @Override
     public boolean existsByPhone(String phone) {
-        String jpql = "SELECT COUNT(c) FROM CustomerEntity c WHERE c.phone = :phone";
-        Query query = entityManager.createQuery(jpql);
-        query.setParameter("phone", phone);
-        Long count = (Long) query.getSingleResult();
+        String sql = "SELECT COUNT(*) FROM customer c WHERE c.phone = ?";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter(1, phone);
+        Long count = ((Number) query.getSingleResult()).longValue();
         return count > 0;
     }
 
     @Override
     public boolean existsByUsername(String username) {
-        String jpql = "SELECT COUNT(a) FROM AccountEntity a WHERE a.username = :username";
-        Query query = entityManager.createQuery(jpql);
-        query.setParameter("username", username);
-        Long count = (Long) query.getSingleResult();
+        String sql = "SELECT COUNT(*) FROM account a WHERE a.username = ?";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter(1, username);
+        Long count = ((Number) query.getSingleResult()).longValue();
         return count > 0;
     }
 
     @Override
     public AccountEntity findByCustomerId(Long id) {
         try {
-            String jpql = "SELECT a FROM AccountEntity a WHERE a.customer.id = :customerId";
-            Query query = entityManager.createQuery(jpql);
-            query.setParameter("customerId", id);
+            String sql = "SELECT * FROM account a WHERE a.customer_id = ?";
+            Query query = entityManager.createNativeQuery(sql, AccountEntity.class);
+            query.setParameter(1, id);
             AccountEntity accountEntity = (AccountEntity) query.getSingleResult();
             return accountEntity;
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -126,18 +126,16 @@ public class AccountDAO extends AbstractDAO<AccountEntity> implements IAccountDA
     public UserResponse findByUserNameAndPassword(String userName, String password) {
         EntityManager em = getEntityManager();
         UserResponse userResponse = new UserResponse();
-        String jpql = "SELECT a FROM AccountEntity a WHERE a.username = :username";
+        String sql = "SELECT * FROM account a WHERE a.username = ?";
 
-        List<AccountEntity> resultList = em.createQuery(jpql, AccountEntity.class)
-                .setParameter("username", userName)
+        List<AccountEntity> resultList = em.createNativeQuery(sql, AccountEntity.class)
+                .setParameter(1, userName)
                 .getResultList();
 
         if (resultList != null && !resultList.isEmpty()) {
             AccountEntity accountEntity = resultList.get(0);
             AccountResponse accountResponse = accountMapper.toAccountResponse(accountEntity);
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-
 
             if (passwordEncoder.matches(password, accountEntity.getPassword())) {
                 if (accountResponse.getRole().equals("CUSTOMER")) {
@@ -152,5 +150,4 @@ public class AccountDAO extends AbstractDAO<AccountEntity> implements IAccountDA
         }
         return null;
     }
-
 }
