@@ -27,6 +27,19 @@ public class ListVoucherController extends HttpServlet {
     @Inject
     private IProductDiscountService productDiscountService;
 
+
+//    public static String escapeHtml(String input) {
+//        if (input == null) {
+//            return null;
+//        }
+//        return input.replace("&", "&amp;")
+//                .replace("<", "&lt;")
+//                .replace(">", "&gt;")
+//                .replace("\"", "&quot;")
+//                .replace("'", "&#x27;");
+//    }
+
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -35,19 +48,17 @@ public class ListVoucherController extends HttpServlet {
             String currentDate = sdf.format(new Date());
             request.setAttribute("currentDate", currentDate);
 
-            String productName = request.getParameter("productName");
-            boolean searchMode = productName != null && !productName.trim().isEmpty();
-            if (searchMode) {
-                request.setAttribute("searchMode", true);
-            } else {
-                request.setAttribute("searchMode", false);
-            }
+            String rawProductName = request.getParameter("productName"); // lấy giá trị gốc
+//            request.setAttribute("productName", escapeHtml(rawProductName));       // truyền gốc để service tìm kiếm
+
+            boolean searchMode = rawProductName != null && !rawProductName.trim().isEmpty();
+            request.setAttribute("searchMode", searchMode);
 
             List<BillDiscountDTO> billDiscountDTOS = billDiscountService.getAllBillDiscount();
             request.setAttribute("billDiscountList", billDiscountDTOS);
             List<ProductDiscountDTO> productDiscountDTOS = productDiscountService.getAllProductDiscount();
             request.setAttribute("productDiscountList", productDiscountDTOS);
-            List<ProductDiscountDTO> list = productDiscountService.findProductDiscountByProductName(productName);
+            List<ProductDiscountDTO> list = productDiscountService.findProductDiscountByProductName(rawProductName);
             request.setAttribute("searchDiscount", list);
 
             String path = request.getServletPath();
@@ -56,8 +67,9 @@ public class ListVoucherController extends HttpServlet {
             } else {
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Không thể thực hiện thao tác này.");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }

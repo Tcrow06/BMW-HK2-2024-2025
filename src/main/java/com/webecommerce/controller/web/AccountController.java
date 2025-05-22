@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @WebServlet(urlPatterns = {"/thong-tin-ca-nhan"})
 public class AccountController extends HttpServlet {
@@ -43,6 +44,14 @@ public class AccountController extends HttpServlet {
             request.setAttribute("orderInfos", orderInfos);
             request.setAttribute("userResponse", customerResponse);
             request.setAttribute("accountResponse", accountResponse);
+
+
+            // tạo csrfToken
+            String csrfToken = UUID.randomUUID().toString();
+            request.getSession().setAttribute("csrfToken", csrfToken);
+            request.setAttribute("csrfToken", request.getSession().getAttribute("csrfToken"));
+
+
             request.getRequestDispatcher("/views/web/profile.jsp").forward(request, response);
         }catch (Exception e){
             e.printStackTrace();

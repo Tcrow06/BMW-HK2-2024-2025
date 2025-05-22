@@ -1,5 +1,7 @@
 <%@include file="/common/taglib.jsp"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 
 <link rel="stylesheet" href="<c:url value='/static/admin/assets/css/style.css'/>" />
 
@@ -315,67 +317,52 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div id="otpModal">
-          <div>
-            <h3>Nhập mã OTP</h3>
-            <span id="otp-error" style="color: red; display: none;">Bạn chưa nhập mã OTP</span>
-            <input type="text" id="otp-input" data-key="otp" placeholder="Nhập mã OTP" />
-            <button id="submit-otp" style="margin-top: 10px;">Gửi</button>
-          </div>
-        </div>
-        <div class="col-lg-6 col-sm-12">
-          <div class="form-group">
-            <label class="title-box">Họ và Tên</label>
-            <input type="text" data-key="name" placeholder="Enter your name" value="${userResponse.name}">
-          </div>
-        </div>
-        <div class="col-lg-6 col-sm-12">
-          <div class="form-group">
-            <label class="title-box">Email</label>
-            <input type="text" data-key="email" placeholder="enter your email" value="${userResponse.email}">
-          </div>
-        </div>
-        <div class="col-lg-6 col-sm-12">
-          <div class="form-group">
-            <label class="title-box">Điện thoại</label>
-            <input type="text" data-key="phone" placeholder="enter your phone number" value="${userResponse.phone}">
-          </div>
-        </div>
-        <div class="col-lg-6 col-sm-12">
-          <div class="form-group">
-            <input type="hidden" data-key="" placeholder="oke">
-            <input type="hidden" data-key="id" value="${id}">
+      <form id="user-info-form" action="<c:url value='/api/update-user'/>"  method="POST">
 
-          </div>
-        </div>
+        <input type="hidden" name="csrfToken" data-key="csrfToken" value="${csrfToken}">
 
-        <div class="col-lg-6 col-sm-12">
-          <div class="form-group">
-            <label class="title-box">Tên đăng nhập</label>
-            <c:if test="${not empty accountResponse}">
-              <input type="text"  value="${accountResponse.userName}" readonly>
-            </c:if>
-            <c:if test="${empty accountResponse}">
-              <input type="text" placeholder="enter your password" value="Tên đăng nhập" readonly>
-            </c:if>
+        <div class="row g-3">
+          <!-- OTP Modal -->
+          <div id="otpModal" class="col-12 mb-3">
+            <h3 class="mb-2">Nhập mã OTP</h3>
+            <span id="otp-error" class="text-danger d-none">Bạn chưa nhập mã OTP</span>
+            <input type="text" id="otp-input" name="otp" data-key="otp" placeholder="Nhập mã OTP" class="form-control mb-2" />
+            <button type="button" id="submit-otp" class="btn btn-primary">Gửi</button>
+          </div>
+
+          <!-- Họ và tên -->
+          <div class="col-lg-6 col-sm-12">
+            <label for="name" class="form-label">Họ và Tên</label>
+            <input type="text" id="name" name="name" data-key="name" class="form-control" placeholder="Enter your name" value="${userResponse.name}">
+          </div>
+
+          <!-- Email -->
+          <div class="col-lg-6 col-sm-12">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" data-key="email" class="form-control" placeholder="Enter your email" value="${userResponse.email}">
+          </div>
+
+          <!-- Điện thoại -->
+          <div class="col-lg-6 col-sm-12">
+            <label for="phone" class="form-label">Điện thoại</label>
+            <input type="text" id="phone" name="phone" data-key="phone" class="form-control" placeholder="Enter your phone number" value="${userResponse.phone}">
+          </div>
+
+          <!-- Hidden fields -->
+          <div class="col-lg-6 col-sm-12">
+            <input type="hidden" name="something" data-key="" value="">
+            <input type="hidden" name="id" data-key="id" value="${id}">
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-12 d-flex justify-content-between align-items-center mt-3">
+            <a href="<c:url value='/danh-sach-san-pham?page=1&maxPageItem=9'/>" class="btn btn-secondary">Tiếp tục mua sắm</a>
+            <button type="submit" class="btn btn-success btn-submit">Lưu</button>
           </div>
         </div>
-        <div class="col-lg-6 col-sm-12">
-          <div class="form-group">
-            <label class="title-box">Mật khẩu</label>
-            <div class="passs-group">
-              <input type="password" data-key="pass" class=" pass-input" placeholder="">
-            </div>
-          </div>
-        </div>
-        <div class="col-12">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="<c:url value='/danh-sach-san-pham?page=1&maxPageItem=9'/> " class="btn btn-cancel">Tiếp tục mua sắm</a>
-            <a href="javascript:void(0);" class="btn btn-submit me-2">Lưu</a>
-          </div>
-        </div>
-      </div>
+      </form>
+
+
     </div>
   </div>
 </div>
@@ -754,64 +741,10 @@
   };
 
 
-  document.querySelector('.btn-submit').addEventListener('click', () => {
-    const name = document.querySelector('input[data-key="name"]').value.trim();
-    const email = document.querySelector('input[data-key="email"]').value.trim();
-    const phone = document.querySelector('input[data-key="phone"]').value.trim();
-
-    if (!name || !email || !phone) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Thiếu thông tin',
-        text: 'Vui lòng điền đầy đủ Họ tên, Email và Số điện thoại trước khi lưu.'
-      });
-      return;
-    }
-    const passwordInput = document.querySelector('input[data-key="pass"]').value.trim() || "";
-    const id = document.querySelector('input[data-key="id"]').value.trim();
-    const otpModal = document.getElementById('otpModal');
-    const otpError = document.getElementById('otp-error');
-    const otpInput = document.getElementById('otp-input');
-    let otp = "";
-
-    if (passwordInput !== "") {
-      const sendOtp = {
-        id: id,
-        email: document.querySelector('input[data-key="email"]').value.trim()
-      }
-      fetch('/api/send-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sendOtp),
-      })
-              .then(response => {
-                if (response.ok) {
-                  otpModal.style.display = 'flex';
-                } else {
-                  throw new Error('Không thể gửi OTP, vui lòng thử lại.');
-                }
-              })
-              .catch(error => {
-                console.error('Lỗi gửi OTP:', error);
-                alert('Không thể gửi OTP, vui lòng thử lại.');
-              });
-
-      document.getElementById('submit-otp').addEventListener('click', () => {
-        if (!otpInput.value.trim()) {
-          otpError.style.display = 'block';
-          return;
-        }
-        otp = otpInput.value.trim();
-        otpError.style.display = 'none';
-        otpModal.style.display = 'none';
-        sendDataToServer(passwordInput, otp);
-      });
-    } else {
-      sendDataToServer(passwordInput, otp);
-    }
-  });
+  // document.querySelector('.btn-submit').addEventListener('click', (event) => {
+  //   event.preventDefault();
+  //   sendDataToServer()
+  // });
 
   function sendDataToServer(passwordInput, otp) {
     const userInfo = getUserInfo();
@@ -878,4 +811,34 @@
 
 
 
+</script>
+
+<script>
+  document.querySelector('.btn-submit').addEventListener('click', (event) => {
+    event.preventDefault(); // Ngăn submit mặc định
+
+    alert(1)
+
+    const form = document.getElementById('user-info-form');
+    const formData = new FormData(form);
+
+    fetch('/api/update-user', {
+      method: 'POST',
+      body: formData
+    })
+            .then(response => {
+              if (response.ok) {
+                return response.json(); // nếu server trả JSON
+              }
+              throw new Error('Có lỗi xảy ra trong quá trình gửi dữ liệu.');
+            })
+            .then(data => {
+              alert('Cập nhật thành công!');
+              window.location.reload();
+            })
+            .catch(error => {
+              console.error('Lỗi:', error);
+              alert('Không thể cập nhật thông tin, vui lòng thử lại.');
+            });
+  });
 </script>

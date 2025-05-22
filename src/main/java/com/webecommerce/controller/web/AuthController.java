@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 import static com.webecommerce.utils.StringUtils.sanitizeInput;
 
@@ -37,7 +38,7 @@ public class AuthController extends HttpServlet {
 
     @Inject
     private IAccountService accountService;
-
+    
     @Inject
     private ICartItemService cartItemService;
 
@@ -118,6 +119,16 @@ public class AuthController extends HttpServlet {
         } else {
             request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
         }
+
+        if (session.getAttribute("csrfToken") == null) {
+            String csrfToken = UUID.randomUUID().toString();
+            session.setAttribute("csrfToken", csrfToken);
+            request.setAttribute("csrfToken", csrfToken);
+        } else {
+            request.setAttribute("csrfToken", session.getAttribute("csrfToken"));
+        }
+
+        request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
     }
 
     @Override
@@ -178,8 +189,8 @@ public class AuthController extends HttpServlet {
 
                 // Thiết lập cookie với HttpOnly và Secure
                 Cookie cookie = new Cookie("token", jwtToken);
-                cookie.setHttpOnly(true);
-                cookie.setSecure(true); // Chỉ truyền qua HTTPS
+//                cookie.setHttpOnly(true);
+//                cookie.setSecure(true); // Chỉ truyền qua HTTPS
                 cookie.setPath("/");
                 response.addCookie(cookie);
 

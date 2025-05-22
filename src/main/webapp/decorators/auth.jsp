@@ -27,6 +27,7 @@
                 AccountRequest account = (AccountRequest) session.getAttribute("loginData");
             %>
             <form action="<c:url value='/dang-nhap'/>" class="sign-in-form" method="post" id="loginForm">
+                <input type="hidden" name="csrfToken" value="${csrfToken}" />
                 <c:if test="${not empty message}">
                     <div class="alert alert-${alert}" role="alert" id="login-error-message">
                             ${message}
@@ -70,6 +71,7 @@
             %>
 
             <form action="<c:url value='/dang-ky'/>" class="sign-up-form" method="post" id="form-register">
+                <input type="hidden" name="csrfToken" value="${csrfToken}" />
                 <c:if test="${not empty message}">
                     <div class="alert alert-${alert}" role="alert" id="register-error-message">
                             ${message}
