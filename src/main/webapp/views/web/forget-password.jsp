@@ -14,6 +14,9 @@
     <div class="forms-container">
         <div class="signin-signup">
             <form action="<c:url value="/quen-mat-khau"/>" class="sign-in-form" method="post">
+
+                <input type="hidden" name="csrfToken" data-key="csrfToken" value="${csrfToken}">
+
                 <c:if test="${not empty message}">
                     <div class="alert alert-${alert}" role="alert" id="register-error-message">
                             ${message}

@@ -36,6 +36,7 @@
             <div class="col-lg-6 col-md-6">
                 <div class="contact__form">
                     <form action="/sendEmail" method="POST">
+                        <input type="hidden" name="csrfToken" data-key="csrfToken" value="${csrfToken}">
                         <div class="row">
                             <div class="col-lg-6">
                                 <input type="text" name="name" placeholder="Tên" required>

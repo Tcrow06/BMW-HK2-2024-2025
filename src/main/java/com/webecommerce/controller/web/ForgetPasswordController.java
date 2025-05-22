@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 @WebServlet(urlPatterns = {"/quen-mat-khau"})
 public class ForgetPasswordController extends HttpServlet {
@@ -29,6 +30,12 @@ public class ForgetPasswordController extends HttpServlet {
         String action = request.getParameter("action");
         String message = request.getParameter("message");
         String alert = request.getParameter("alert");
+
+        // tạo csrfToken
+        String csrfToken = UUID.randomUUID().toString();
+        request.getSession().setAttribute("csrfToken", csrfToken);
+        request.setAttribute("csrfToken", request.getSession().getAttribute("csrfToken"));
+
         if (message != null && alert != null) {
             request.setAttribute("message", resourceBundle.getString(message));
             request.setAttribute("alert", alert);
@@ -37,7 +44,7 @@ public class ForgetPasswordController extends HttpServlet {
 
             request.getRequestDispatcher("/views/web/enter-OTP.jsp").forward(request,response);
         } else if(action != null && action.equals("set_password")) {
-            request.getRequestDispatcher("/views/web/confirm-password.jsp").forward(request,response);
+            request.getRequestDispatcher("/views/web/confirm-password.jsp").forward(request, response);
         }
 
         request.getRequestDispatcher("/views/web/forget-password.jsp").forward(request,response);
@@ -45,6 +52,14 @@ public class ForgetPasswordController extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
+
+        // kiểm tra csrf token
+        String sessionCsrf = (String) session.getAttribute("csrfToken");
+        if (sessionCsrf == null || !sessionCsrf.equals(request.getParameter("csrfToken"))) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "CSRF token không hợp lệ");
+            return;
+        }
+
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         String action = request.getParameter("action");
