@@ -15,6 +15,7 @@
     <div class="forms-container" style="display: flex; justify-content: center; margin-top: 50px;"  >
         <div class="signin-signup">
             <form id="verify-form" class="sign-in-form" method="post">
+                <input type="hidden" name="csrfToken" data-key="csrfToken" value="${csrfToken}">
                 <c:if test="${not empty message}">
                     <div class="alert alert-${alert}" role="alert" id="register-error-message">
                             ${message}
