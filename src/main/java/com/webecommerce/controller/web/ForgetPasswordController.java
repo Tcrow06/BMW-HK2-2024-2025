@@ -30,6 +30,12 @@ public class ForgetPasswordController extends HttpServlet {
         String action = request.getParameter("action");
         String message = request.getParameter("message");
         String alert = request.getParameter("alert");
+
+        // tạo csrfToken
+        String csrfToken = UUID.randomUUID().toString();
+        request.getSession().setAttribute("csrfToken", csrfToken);
+        request.setAttribute("csrfToken", request.getSession().getAttribute("csrfToken"));
+
         if (message != null && alert != null) {
             request.setAttribute("message", resourceBundle.getString(message));
             request.setAttribute("alert", alert);
@@ -38,13 +44,8 @@ public class ForgetPasswordController extends HttpServlet {
 
             request.getRequestDispatcher("/views/web/enter-OTP.jsp").forward(request,response);
         } else if(action != null && action.equals("set_password")) {
-            request.getRequestDispatcher("/views/web/confirm-password.jsp").forward(request,response);
+            request.getRequestDispatcher("/views/web/confirm-password.jsp").forward(request, response);
         }
-
-        // tạo csrfToken
-        String csrfToken = UUID.randomUUID().toString();
-        request.getSession().setAttribute("csrfToken", csrfToken);
-        request.setAttribute("csrfToken", request.getSession().getAttribute("csrfToken"));
 
         request.getRequestDispatcher("/views/web/forget-password.jsp").forward(request,response);
     }
