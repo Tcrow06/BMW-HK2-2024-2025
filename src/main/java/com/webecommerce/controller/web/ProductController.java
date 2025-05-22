@@ -19,7 +19,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.webecommerce.utils.StringUtils.sanitizeInput;
 import static com.webecommerce.utils.StringUtils.sanitizeXsltInput;
@@ -46,43 +52,64 @@ public class ProductController extends HttpServlet {
             brand = null;
         }
 
-        // Xử lý tham số page
+//        int page = 1; // Giá trị mặc định
+//        String pageParam = sanitizeInput(request.getParameter("page"));
+//        if (pageParam != null && pageParam.matches("^\\d+$")) {
+//            try {
+//                page = Integer.parseInt(pageParam);
+//                if (page < 1) page = 1;
+//            } catch (NumberFormatException e) {
+//                System.out.println(String.format("Invalid page: %s", pageParam));
+//            }
+//        }
+
         int page = 1; // Giá trị mặc định
         String pageParam = sanitizeInput(request.getParameter("page"));
+        boolean redirectNeeded = false;
+
         if (pageParam != null && pageParam.matches("^\\d+$")) {
             try {
                 page = Integer.parseInt(pageParam);
                 if (page < 1) {
-                    page = 1;
+                    redirectNeeded = true;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid page parameter: {}", pageParam);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid page parameter");
-                return;
+                redirectNeeded = true;
             }
         } else if (pageParam != null) {
-            logger.error("Invalid page format: {}", pageParam);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid page format");
-            return;
+            redirectNeeded = true;
         }
 
-        // Xử lý tham số maxPageItem
-        int maxPageItem = 10; // Giá trị mặc định
+        int maxPageItem = 9; // Giá trị mặc định
         String maxPageItemParam = sanitizeXsltInput(request.getParameter("maxPageItem"));
+
         if (maxPageItemParam != null && maxPageItemParam.matches("^\\d+$")) {
             try {
                 maxPageItem = Integer.parseInt(maxPageItemParam);
                 if (maxPageItem < 1 || maxPageItem > 100) {
-                    maxPageItem = 10;
+                    redirectNeeded = true;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid maxPageItem: {}", maxPageItemParam);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid maxPageItem parameter");
-                return;
+                redirectNeeded = true;
             }
         } else if (maxPageItemParam != null) {
-            logger.error("Invalid maxPageItem format: {}", maxPageItemParam);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid maxPageItem format");
+            redirectNeeded = true;
+        }
+
+// --- Redirect nếu cần ---
+        if (redirectNeeded) {
+            Map<String, String[]> paramMap = new HashMap<>(request.getParameterMap());
+
+            // Ghi đè hoặc thêm các giá trị mặc định
+            paramMap.put("page", new String[]{"1"});
+            paramMap.put("maxPageItem", new String[]{"9"});
+
+            String query = paramMap.entrySet().stream()
+                    .flatMap(entry -> Arrays.stream(entry.getValue())
+                            .map(value -> entry.getKey() + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)))
+                    .collect(Collectors.joining("&"));
+
+            response.sendRedirect(request.getRequestURI() + "?" + query);
             return;
         }
 

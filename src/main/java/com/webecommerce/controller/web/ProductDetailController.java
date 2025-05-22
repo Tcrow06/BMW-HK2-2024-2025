@@ -27,9 +27,14 @@ public class ProductDetailController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long id = null ;
         try {
-            id = Long.valueOf(request.getParameter("id"));
+            String idStr = request.getParameter("id");
+            id = Long.valueOf(idStr);  // Có thể gây lỗi
+
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            System.out.println("Lỗi chuyển đổi ID sản phẩm" + e);
+
+            request.setAttribute("errorMessage", "ID sản phẩm không hợp lệ.");
+            request.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(request, response);
         }
         if (id != null) {
             ProductDTO product = productService.getProductDetailById(id);
