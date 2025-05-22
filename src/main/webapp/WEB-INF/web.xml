@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://java.sun.com/xml/ns/javaee"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
@@ -33,6 +34,26 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+<!--  &lt;!&ndash; ✅ HSTS Filter &ndash;&gt;-->
+<!--  <filter>-->
+<!--    <filter-name>hstsFilter</filter-name>-->
+<!--    <filter-class>com.webecommerce.filter.HSTSFilter</filter-class>-->
+<!--  </filter>-->
+<!--  <filter-mapping>-->
+<!--    <filter-name>hstsFilter</filter-name>-->
+<!--    <url-pattern>/*</url-pattern>-->
+<!--  </filter-mapping>-->
+
+  <filter>
+    <filter-name>ClickjackingFilter</filter-name>
+    <filter-class>com.webecommerce.filter.ClickjackingFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>ClickjackingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
   <error-page>
     <error-code>404</error-code>
     <location>/views/web/error-404.jsp</location>
@@ -40,7 +61,7 @@
 
   <listener>
     <listener-class>com.webecommerce.configuration.MyAppContextListener</listener-class>
-</listener>
+  </listener>
 
 <!--  <jsp-config>-->
 <!--    <jsp-property-group>-->

@@ -32,15 +32,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 @WebServlet(urlPatterns = {"/dang-nhap", "/dang-ky"})
 public class AuthController extends HttpServlet {
     @Inject
     private IAccountService accountService;
-//    ResourceBundle resourceBundle = ResourceBundle.getBundle("message");
-
-
-
     @Inject
     private ICartItemService cartItemService;
 
@@ -54,7 +51,7 @@ public class AuthController extends HttpServlet {
                             StandardCharsets.UTF_8
                     )
             );
-        }catch (Exception e){
+        } catch (Exception e){
             System.out.println("Lỗi khong lấy được message");
             resourceBundle = ResourceBundle.getBundle("message");
         }
@@ -87,6 +84,15 @@ public class AuthController extends HttpServlet {
             }
             request.getRequestDispatcher("/views/web/enter-OTP.jsp").forward(request, response);
         }
+
+        if (session.getAttribute("csrfToken") == null) {
+            String csrfToken = UUID.randomUUID().toString();
+            session.setAttribute("csrfToken", csrfToken);
+            request.setAttribute("csrfToken", csrfToken);
+        } else {
+            request.setAttribute("csrfToken", session.getAttribute("csrfToken"));
+        }
+
         request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
     }
 
