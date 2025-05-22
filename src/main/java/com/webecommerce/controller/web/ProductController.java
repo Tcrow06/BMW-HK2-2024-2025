@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -26,9 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.webecommerce.utils.StringUtils.sanitizeInput;
-import static com.webecommerce.utils.StringUtils.sanitizeXsltInput;
 
 @WebServlet(urlPatterns = {"/danh-sach-san-pham"})
 public class ProductController extends HttpServlet {
@@ -41,28 +40,47 @@ public class ProductController extends HttpServlet {
     @Inject
     private ICategoryService categoryService;
 
+    // Hàm vệ sinh đầu vào với kiểm tra Path Traversal
+    public static String sanitizeInput(String input) {
+        if (input == null) return null;
+        try {
+            // Giải mã URL để xử lý các chuỗi như %2e%2e%2f
+            String decoded = URLDecoder.decode(input, StandardCharsets.UTF_8.name());
+            // Kiểm tra các chuỗi Path Traversal
+            if (decoded.contains("../") || decoded.contains("..\\") || decoded.contains("%00") ||
+                    decoded.contains("./") || decoded.contains(".\\")) {
+                logger.warn("Potential Path Traversal attempt detected: {}", decoded);
+                return null;
+            }
+            // Loại bỏ các ký tự nguy hiểm khác
+            return decoded.replaceAll("[<>\"';]", "").trim();
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Error decoding input: {}", input, e);
+            return null;
+        }
+    }
+
+    // Hàm vệ sinh đầu vào cho XSLT (tương tự nhưng có thể tùy chỉnh thêm nếu cần)
+    public static String sanitizeXsltInput(String input) {
+        return sanitizeInput(input); // Có thể thêm logic riêng cho XSLT nếu cần
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<String> listNames = productService.getAllProductName();
         ProductDTO product = new ProductDTO();
 
-        // Xử lý tham số brand: chỉ cho phép chữ, số, khoảng trắng, dấu gạch ngang
+        // Xử lý tham số brand
         String brand = sanitizeXsltInput(request.getParameter("brand"));
         if (brand != null && !brand.matches("^[a-zA-Z0-9\\s-]{0,50}$")) {
+            logger.warn("Invalid brand format: {}", brand);
+            brand = null;
+        } else if (brand != null && !isValidBrand(brand)) {
+            logger.warn("Brand not found in valid list: {}", brand);
             brand = null;
         }
 
-//        int page = 1; // Giá trị mặc định
-//        String pageParam = sanitizeInput(request.getParameter("page"));
-//        if (pageParam != null && pageParam.matches("^\\d+$")) {
-//            try {
-//                page = Integer.parseInt(pageParam);
-//                if (page < 1) page = 1;
-//            } catch (NumberFormatException e) {
-//                System.out.println(String.format("Invalid page: %s", pageParam));
-//            }
-//        }
-
+        // Xử lý tham số page
         int page = 1; // Giá trị mặc định
         String pageParam = sanitizeInput(request.getParameter("page"));
         boolean redirectNeeded = false;
@@ -74,12 +92,15 @@ public class ProductController extends HttpServlet {
                     redirectNeeded = true;
                 }
             } catch (NumberFormatException e) {
+                logger.error("Invalid page format: {}", pageParam);
                 redirectNeeded = true;
             }
         } else if (pageParam != null) {
+            logger.warn("Potential malicious page input: {}", pageParam);
             redirectNeeded = true;
         }
 
+        // Xử lý tham số maxPageItem
         int maxPageItem = 9; // Giá trị mặc định
         String maxPageItemParam = sanitizeXsltInput(request.getParameter("maxPageItem"));
 
@@ -87,20 +108,21 @@ public class ProductController extends HttpServlet {
             try {
                 maxPageItem = Integer.parseInt(maxPageItemParam);
                 if (maxPageItem < 1 || maxPageItem > 100) {
+                    logger.warn("Invalid maxPageItem: {}", maxPageItemParam);
                     redirectNeeded = true;
                 }
             } catch (NumberFormatException e) {
+                logger.error("Invalid maxPageItem format: {}", maxPageItemParam);
                 redirectNeeded = true;
             }
         } else if (maxPageItemParam != null) {
+            logger.warn("Potential malicious maxPageItem input: {}", maxPageItemParam);
             redirectNeeded = true;
         }
 
-// --- Redirect nếu cần ---
+        // Chuyển hướng nếu có tham số không hợp lệ
         if (redirectNeeded) {
             Map<String, String[]> paramMap = new HashMap<>(request.getParameterMap());
-
-            // Ghi đè hoặc thêm các giá trị mặc định
             paramMap.put("page", new String[]{"1"});
             paramMap.put("maxPageItem", new String[]{"9"});
 
@@ -113,38 +135,39 @@ public class ProductController extends HttpServlet {
             return;
         }
 
-        // Xử lý tham số tag, sort, searchName
+        // Xử lý tham số tag
         String tag = sanitizeInput(request.getParameter("tag"));
         if (tag != null && !tag.matches("^[a-zA-Z0-9\\s-]{0,50}$")) {
+            logger.warn("Invalid tag format: {}", tag);
             tag = null;
         }
 
+        // Xử lý tham số sort
         String sort = sanitizeInput(request.getParameter("sort"));
         if (sort != null && !isValidSort(sort)) {
+            logger.warn("Invalid sort value: {}", sort);
             sort = null;
         }
 
+        // Xử lý tham số ten (tên sản phẩm)
         String searchName = sanitizeInput(request.getParameter("ten"));
         if (searchName != null && !searchName.isEmpty()) {
             searchName = searchName.trim();
             if (searchName.length() > 100 || !searchName.matches("^[a-zA-Z0-9\\s-]*$")) {
+                logger.warn("Invalid searchName format: {}", searchName);
                 searchName = null;
             }
         }
 
-        product.setPage(page);
-        product.setMaxPageItem(maxPageItem);
-
         // Xử lý tham số category
         String categoryParam = sanitizeXsltInput(request.getParameter("category"));
         int categoryId = -1; // Giá trị mặc định
-        if (categoryParam != null && !categoryParam.isEmpty()) { // Kiểm tra không rỗng
+        if (categoryParam != null && !categoryParam.isEmpty()) {
             if (categoryParam.matches("^\\d+$")) {
                 try {
                     categoryId = Integer.parseInt(categoryParam);
                     if (categoryId < 1 || categoryId > 1000) {
                         logger.warn("Invalid category ID: {}", categoryParam);
-                        // Chuyển hướng thay vì trả lỗi
                         response.sendRedirect(request.getContextPath() + "/danh-sach-san-pham?page=1&maxPageItem=9");
                         return;
                     }
@@ -154,7 +177,7 @@ public class ProductController extends HttpServlet {
                     return;
                 }
             } else {
-                logger.warn("Invalid category format: {}", categoryParam);
+                logger.warn("Potential malicious category input: {}", categoryParam);
                 response.sendRedirect(request.getContextPath() + "/danh-sach-san-pham?page=1&maxPageItem=9");
                 return;
             }
@@ -173,10 +196,10 @@ public class ProductController extends HttpServlet {
                     minPrice = 0;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid minPrice: {}", minPriceStr);
+                logger.error("Invalid minPrice format: {}", minPriceStr);
             }
         } else if (minPriceStr != null) {
-            logger.error("Invalid minPrice format: {}", minPriceStr);
+            logger.warn("Potential malicious minPrice input: {}", minPriceStr);
         }
 
         if (maxPriceStr != null && maxPriceStr.matches("^\\d+(\\.\\d+)?$")) {
@@ -186,12 +209,15 @@ public class ProductController extends HttpServlet {
                     maxPrice = minPrice;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid maxPrice: {}", maxPriceStr);
+                logger.error("Invalid maxPrice format: {}", maxPriceStr);
             }
         } else if (maxPriceStr != null) {
-            logger.error("Invalid maxPrice format: {}", maxPriceStr);
+            logger.warn("Potential malicious maxPrice input: {}", maxPriceStr);
         }
 
+        // Thiết lập các tham số cho ProductDTO
+        product.setPage(page);
+        product.setMaxPageItem(maxPageItem);
         if (sort != null) {
             product.setSortBy(sort);
         }
@@ -211,7 +237,7 @@ public class ProductController extends HttpServlet {
             product.setResultList(productDTOList);
         } catch (Exception e) {
             logger.error("Error fetching products: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching products");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi khi lấy danh sách sản phẩm");
             return;
         }
 
@@ -224,6 +250,8 @@ public class ProductController extends HttpServlet {
         request.setAttribute(ModelConstant.MODEL1, categoryService.findAll());
         request.setAttribute(ModelConstant.MODEL, product);
         request.setAttribute("listNames", listNames);
+
+        // Chuyển hướng đến JSP
         request.getRequestDispatcher("/views/web/product-list.jsp").forward(request, response);
     }
 
@@ -232,5 +260,11 @@ public class ProductController extends HttpServlet {
         if (sort == null) return false;
         return sort.equals("price-asc") || sort.equals("price-desc") ||
                 sort.equals("name-asc") || sort.equals("name-desc");
+    }
+
+    // Hàm kiểm tra brand hợp lệ (dựa trên danh sách từ productService)
+    private boolean isValidBrand(String brand) {
+        List<String> validBrands = productService.getBrands();
+        return brand != null && validBrands.contains(brand);
     }
 }
