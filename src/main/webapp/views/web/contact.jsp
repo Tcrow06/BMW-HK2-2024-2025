@@ -44,7 +44,7 @@
                                 <input type="text" name="email" placeholder="Email" required>
                             </div>
                             <div class="col-lg-12">
-                                <textarea name="messageContent" placeholder="Nội dung" required></textarea>
+                                <textarea name="messageContent" place   holder="Nội dung" required></textarea>
                                 <button type="submit" class="site-btn">Gửi lời nhắn</button>
                             </div>
                         </div>

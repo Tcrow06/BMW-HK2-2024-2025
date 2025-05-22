@@ -18,7 +18,7 @@ public class ProductReviewDAO extends AbstractDAO<ProductReviewEntity> implement
 
     @Override
     public int calculateStarByProduct(Long productId) {
-        String query = "SELECT AVG(d.numberOfStars) FROM ProductReviewEntity d " +
+        String query = "SELECT COALESCE(AVG(d.numberOfStars), 0) FROM ProductReviewEntity d " +
                 "JOIN d.orderDetail od JOIN od.productVariant pv " +
                 "WHERE pv.product.id = :productId";
 
@@ -26,8 +26,9 @@ public class ProductReviewDAO extends AbstractDAO<ProductReviewEntity> implement
                 .setParameter("productId", productId)
                 .getSingleResult();
 
-        return averageStars != null ? (int) Math.round(averageStars) : 0;
+        return (int) Math.round(averageStars);
     }
+
 
     @Override
     public int countProductReviewByProduct(Long productId) {

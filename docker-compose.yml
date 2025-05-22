@@ -44,7 +44,7 @@ services:
       - mysql
       - redis
     environment:
-      MYSQL_URL: "jdbc:mysql://mysql:3306/WebCuoiKy?useSSL=false&serverTimezone=UTC"
+      MYSQL_URL: "jdbc:mysql://mysql:3300/WebCuoiKy?useSSL=false&serverTimezone=UTC"
       MYSQL_USERNAME: "root"
       MYSQL_PASSWORD: "1234"
       REDIS_HOST: "redis"
