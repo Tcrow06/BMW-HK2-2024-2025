@@ -80,9 +80,29 @@ public class ProductController extends HttpServlet {
             redirectNeeded = true;
         }
 
+        int maxPageItem = 9; // Giá trị mặc định
+        String maxPageItemParam = sanitizeXsltInput(request.getParameter("maxPageItem"));
+
+        if (maxPageItemParam != null && maxPageItemParam.matches("^\\d+$")) {
+            try {
+                maxPageItem = Integer.parseInt(maxPageItemParam);
+                if (maxPageItem < 1 || maxPageItem > 100) {
+                    redirectNeeded = true;
+                }
+            } catch (NumberFormatException e) {
+                redirectNeeded = true;
+            }
+        } else if (maxPageItemParam != null) {
+            redirectNeeded = true;
+        }
+
+// --- Redirect nếu cần ---
         if (redirectNeeded) {
             Map<String, String[]> paramMap = new HashMap<>(request.getParameterMap());
-            paramMap.put("page", new String[]{"1"}); // Ghi đè hoặc thêm page = 1
+
+            // Ghi đè hoặc thêm các giá trị mặc định
+            paramMap.put("page", new String[]{"1"});
+            paramMap.put("maxPageItem", new String[]{"9"});
 
             String query = paramMap.entrySet().stream()
                     .flatMap(entry -> Arrays.stream(entry.getValue())
@@ -90,27 +110,6 @@ public class ProductController extends HttpServlet {
                     .collect(Collectors.joining("&"));
 
             response.sendRedirect(request.getRequestURI() + "?" + query);
-            return;
-        }
-
-
-
-        int maxPageItem = 10; // Giá trị mặc định
-        String maxPageItemParam = sanitizeXsltInput(request.getParameter("maxPageItem"));
-        if (maxPageItemParam != null && maxPageItemParam.matches("^\\d+$")) {
-            try {
-                maxPageItem = Integer.parseInt(maxPageItemParam);
-                if (maxPageItem < 1 || maxPageItem > 100) {
-                    maxPageItem = 10;
-                }
-            } catch (NumberFormatException e) {
-                logger.error("Invalid maxPageItem: {}", maxPageItemParam);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid maxPageItem parameter");
-                return;
-            }
-        } else if (maxPageItemParam != null) {
-            logger.error("Invalid maxPageItem format: {}", maxPageItemParam);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid maxPageItem format");
             return;
         }
 
@@ -136,18 +135,29 @@ public class ProductController extends HttpServlet {
         product.setPage(page);
         product.setMaxPageItem(maxPageItem);
 
-
-
-//        String categoryParam = sanitizeXsltInput(request.getParameter("category"));
-        String categoryParam = (request.getParameter("category"));
-
-        int categoryId = -1;
-
-        try {
-            categoryId = Integer.parseInt(categoryParam);
-        }
-        catch (NumberFormatException e) {
-            System.out.println(String.format("Invalid category: %s", categoryId));
+        // Xử lý tham số category
+        String categoryParam = sanitizeXsltInput(request.getParameter("category"));
+        int categoryId = -1; // Giá trị mặc định
+        if (categoryParam != null && !categoryParam.isEmpty()) { // Kiểm tra không rỗng
+            if (categoryParam.matches("^\\d+$")) {
+                try {
+                    categoryId = Integer.parseInt(categoryParam);
+                    if (categoryId < 1 || categoryId > 1000) {
+                        logger.warn("Invalid category ID: {}", categoryParam);
+                        // Chuyển hướng thay vì trả lỗi
+                        response.sendRedirect(request.getContextPath() + "/danh-sach-san-pham?page=1&maxPageItem=9");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid category format: {}", categoryParam);
+                    response.sendRedirect(request.getContextPath() + "/danh-sach-san-pham?page=1&maxPageItem=9");
+                    return;
+                }
+            } else {
+                logger.warn("Invalid category format: {}", categoryParam);
+                response.sendRedirect(request.getContextPath() + "/danh-sach-san-pham?page=1&maxPageItem=9");
+                return;
+            }
         }
 
         // Xử lý tham số minPrice và maxPrice
