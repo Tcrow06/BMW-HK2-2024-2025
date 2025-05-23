@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.webecommerce.utils.StringUtils.sanitizeInput;
-import static com.webecommerce.utils.StringUtils.sanitizeXsltInput;
+import static com.webecommerce.utils.StringUtils.*;
 
 @WebServlet(urlPatterns = {"/danh-sach-san-pham"})
 public class ProductController extends HttpServlet {
@@ -47,24 +46,15 @@ public class ProductController extends HttpServlet {
         ProductDTO product = new ProductDTO();
 
         // Xử lý tham số brand: chỉ cho phép chữ, số, khoảng trắng, dấu gạch ngang
-        String brand = sanitizeXsltInput(request.getParameter("brand"));
+        String brand = sanitizeXsltInput2(request.getParameter("brand"));
         if (brand != null && !brand.matches("^[a-zA-Z0-9\\s-]{0,50}$")) {
             brand = null;
         }
 
-//        int page = 1; // Giá trị mặc định
-//        String pageParam = sanitizeInput(request.getParameter("page"));
-//        if (pageParam != null && pageParam.matches("^\\d+$")) {
-//            try {
-//                page = Integer.parseInt(pageParam);
-//                if (page < 1) page = 1;
-//            } catch (NumberFormatException e) {
-//                System.out.println(String.format("Invalid page: %s", pageParam));
-//            }
-//        }
+
 
         int page = 1; // Giá trị mặc định
-        String pageParam = sanitizeInput(request.getParameter("page"));
+        String pageParam = sanitizeXsltInputNumber(request.getParameter("page"));
         boolean redirectNeeded = false;
 
         if (pageParam != null && pageParam.matches("^\\d+$")) {
@@ -81,7 +71,7 @@ public class ProductController extends HttpServlet {
         }
 
         int maxPageItem = 9; // Giá trị mặc định
-        String maxPageItemParam = sanitizeXsltInput(request.getParameter("maxPageItem"));
+        String maxPageItemParam = sanitizeXsltInputNumber(request.getParameter("maxPageItem"));
 
         if (maxPageItemParam != null && maxPageItemParam.matches("^\\d+$")) {
             try {

@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
+import static com.webecommerce.utils.StringUtils.sanitizeXsltInput2;
+
 @WebServlet(urlPatterns = {"/quen-mat-khau"})
 public class ForgetPasswordController extends HttpServlet {
 
@@ -87,8 +89,8 @@ public class ForgetPasswordController extends HttpServlet {
             }
         }
         else {
-            String email = request.getParameter("email");
-            String username = request.getParameter("username");
+            String email = sanitizeXsltInput2(request.getParameter("email"));
+            String username = sanitizeXsltInput2(request.getParameter("username"));
 
             boolean exists = accountService.existsUsernameAndEmail(username, email);
             if (!exists) {

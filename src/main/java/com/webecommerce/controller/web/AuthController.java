@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import static com.webecommerce.utils.StringUtils.sanitizeInput;
+import static com.webecommerce.utils.StringUtils.sanitizeXsltInput2;
 
 @WebServlet(urlPatterns = {"/dang-nhap", "/dang-ky"})
 public class AuthController extends HttpServlet {
@@ -120,13 +121,11 @@ public class AuthController extends HttpServlet {
             request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
         }
 
-        if (session.getAttribute("csrfToken") == null) {
-            String csrfToken = UUID.randomUUID().toString();
+        String csrfToken = sanitizeXsltInput2((String) session.getAttribute("csrfToken"));
+
             session.setAttribute("csrfToken", csrfToken);
             request.setAttribute("csrfToken", csrfToken);
-        } else {
-            request.setAttribute("csrfToken", session.getAttribute("csrfToken"));
-        }
+
 
         request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
     }
