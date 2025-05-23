@@ -1,5 +1,7 @@
 package com.webecommerce.dto.request.other;
 
+import org.owasp.encoder.Encode;
+
 public class AccountRequest {
     private String userName;
     private String password;
@@ -7,7 +9,7 @@ public class AccountRequest {
     private String role;
 
     public String getUserName() {
-        return userName;
+        return Encode.forHtmlAttribute(userName);
     }
 
     public void setUserName(String userName) {
@@ -15,7 +17,7 @@ public class AccountRequest {
     }
 
     public String getPassword() {
-        return password;
+        return Encode.forHtmlAttribute(password);
     }
 
     public void setPassword(String password) {
@@ -23,7 +25,7 @@ public class AccountRequest {
     }
 
     public String getStatus() {
-        return status;
+        return Encode.forHtmlAttribute(status);
     }
 
     public void setStatus(String status) {
@@ -31,7 +33,7 @@ public class AccountRequest {
     }
 
     public String getRole() {
-        return role;
+        return Encode.forHtmlAttribute(role);
     }
 
     public void setRole(String role) {

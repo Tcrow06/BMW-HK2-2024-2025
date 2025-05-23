@@ -69,9 +69,10 @@ public class AuthController extends HttpServlet {
 
         String action = sanitizeInput(request.getParameter("action"));
         if (action != null && (action.equals("login") || action.equals("register") || action.equals("verify"))) {
-            String message = sanitizeInput(request.getParameter("message"));
-            String alert = sanitizeInput(request.getParameter("alert"));
-            String link = sanitizeInput(request.getParameter("link"));
+
+            String message = Encode.forHtml(request.getParameter("message"));
+            String alert = Encode.forHtml(request.getParameter("alert"));
+            String link = Encode.forHtml(request.getParameter("link"));
 
             // Allow list cho alert
             if (alert != null && !alert.matches("^(success|danger)$")) {
@@ -131,6 +132,7 @@ public class AuthController extends HttpServlet {
         request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
     }
 
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -141,45 +143,55 @@ public class AuthController extends HttpServlet {
         String action = sanitizeInput(request.getParameter("action"));
         CheckOutRequestDTO checkOutRequestDTO = (CheckOutRequestDTO) session.getAttribute("orderNotHandler");
 
-        if (action != null && action.equals("login")) {
+        if ("login".equals(action)) {
             AccountRequest account = FormUtils.toModel(AccountRequest.class, request);
             String messageStr = accountService.checkLogin(account);
+
             if (!messageStr.trim().isEmpty()) {
                 session.setAttribute("loginData", account);
-                response.sendRedirect(request.getContextPath() + "/dang-nhap?action=login&message=" + Encode.forUriComponent(messageStr) + "&alert=danger");
+                String redirectUrl = request.getContextPath() + "/dang-nhap?action=login&message="
+                        + Encode.forUriComponent(messageStr) + "&alert=danger";
+                response.sendRedirect(redirectUrl);
                 return;
             }
 
-            UserResponse foundUser = accountService.findByUserNameAndPasswordAndStatus(account.getUserName(), account.getPassword(), "UNVERIFIED");
+            UserResponse foundUser = accountService.findByUserNameAndPasswordAndStatus(
+                    account.getUserName(), account.getPassword(), "UNVERIFIED");
+
             if (foundUser != null) {
                 accountService.sendOTPToEmail(foundUser.getEmail(), foundUser.getId(), "register");
-                response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + Encode.forUriComponent(foundUser.getId().toString()) + "&message=unverified&alert=danger");
+                response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id="
+                        + Encode.forUriComponent(foundUser.getId().toString()) + "&message=unverified&alert=danger");
                 return;
             }
 
             UserResponse user = accountService.findByUserNameAndPassword(account.getUserName(), account.getPassword());
+
             if (user != null) {
-                if (user.getStatus().equals(EnumAccountStatus.BLOCK)) {
+                if (EnumAccountStatus.BLOCK.equals(user.getStatus())) {
                     session.setAttribute("loginData", account);
-                    response.sendRedirect(request.getContextPath() + "/dang-nhap?action=login&message=username_is_block&alert=danger&link=help");
+                    String redirectUrl = request.getContextPath() + "/dang-nhap?action=login&message="
+                            + Encode.forUriComponent("username_is_block") + "&alert=danger&link=help";
+                    response.sendRedirect(redirectUrl);
                     return;
                 }
 
                 SessionUtil.getInstance().putValue(request, "USERINFO", user);
-                String path = null;
-                String jwtToken = null;
+                String path;
+                String jwtToken = JWTUtil.generateToken(user);
 
-                if (user.getRole().equals(EnumRole.OWNER)) {
-                    jwtToken = JWTUtil.generateToken(user);
+                if (EnumRole.OWNER.equals(user.getRole())) {
                     path = "/chu-cua-hang";
-                } else if (user.getRole().equals(EnumRole.CUSTOMER)) {
+                } else {
                     HashMap<Long, CartItemDTO> cart = (HashMap<Long, CartItemDTO>) session.getAttribute("cart");
                     cart = cartItemService.updateCartWhenLogin(cart, user.getId());
+
                     if (checkOutRequestDTO != null) {
                         cart = cartItemService.updateCartWhenBuy(user.getId(), checkOutRequestDTO);
                     }
+
                     request.getSession().setAttribute("cart", cart);
-                    jwtToken = JWTUtil.generateToken(user);
+
                     path = "/trang-chu";
                     if (session.getAttribute("send-direction") != null) {
                         path = session.getAttribute("send-direction").toString();
@@ -187,69 +199,71 @@ public class AuthController extends HttpServlet {
                     }
                 }
 
-                // Thiết lập cookie với HttpOnly và Secure
                 Cookie cookie = new Cookie("token", jwtToken);
 //                cookie.setHttpOnly(true);
-//                cookie.setSecure(true); // Chỉ truyền qua HTTPS
+//                cookie.setSecure(true); // Bật nếu dùng HTTPS
                 cookie.setPath("/");
                 response.addCookie(cookie);
 
                 response.sendRedirect(request.getContextPath() + path);
             } else {
                 session.setAttribute("loginData", account);
-                response.sendRedirect(request.getContextPath() + "/dang-nhap?action=login&message=username_password_invalid&alert=danger");
+                response.sendRedirect(request.getContextPath() + "/dang-nhap?action=login&message="
+                        + Encode.forUriComponent("username_password_invalid") + "&alert=danger");
             }
-        } else if (action != null && action.equals("register")) {
+
+        } else if ("register".equals(action)) {
             CustomerRequest customerRequest = FormUtils.toModel(CustomerRequest.class, request);
             try {
                 CustomerResponse customerResponse = accountService.save(customerRequest);
                 if (customerResponse != null) {
-                    boolean ok = accountService.sendOTPToEmail(customerResponse.getEmail(), customerResponse.getId(), "register");
-                    if (ok) {
-                        response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + Encode.forUriComponent(customerResponse.getId().toString()));
+                    boolean sent = accountService.sendOTPToEmail(customerResponse.getEmail(), customerResponse.getId(), "register");
+                    if (sent) {
+                        response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id="
+                                + Encode.forUriComponent(customerResponse.getId().toString()));
                     } else {
                         response.sendRedirect(request.getContextPath() + "/dang-nhap?action=register&message=send_otp_failed&alert=danger");
                     }
                 }
             } catch (DuplicateFieldException e) {
                 session.setAttribute("registrationData", customerRequest);
-                String errorMessage;
-                switch (e.getFieldName()) {
-                    case "phone":
-                        errorMessage = "duplicate_phone";
-                        break;
-                    case "email":
-                        errorMessage = "duplicate_email";
-                        break;
-                    case "username":
-                        errorMessage = "duplicate_username";
-                        break;
-                    default:
-                        errorMessage = "duplicate_information";
-                        break;
-                }
-                response.sendRedirect(request.getContextPath() + "/dang-nhap?action=register&message=" + errorMessage + "&alert=danger");
+                String field = e.getFieldName();
+                String errorMessage = switch (field) {
+                    case "phone" -> "duplicate_phone";
+                    case "email" -> "duplicate_email";
+                    case "username" -> "duplicate_username";
+                    default -> "duplicate_information";
+                };
+
+                response.sendRedirect(request.getContextPath() + "/dang-nhap?action=register&message="
+                        + Encode.forUriComponent(errorMessage) + "&alert=danger");
             }
-        } else if (action != null && action.equals("verify")) {
+
+        } else if ("verify".equals(action)) {
             String otp = sanitizeInput(request.getParameter("otp"));
             String id = sanitizeInput(request.getParameter("id"));
+
             if (otp == null || !otp.matches("^\\d{6}$") || id == null || !id.matches("^\\d+$")) {
-                response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + Encode.forUriComponent(id) + "&message=invalid_otp_or_id&alert=danger");
+                response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id="
+                        + Encode.forUriComponent(id) + "&message=invalid_otp_or_id&alert=danger");
                 return;
             }
 
             int count = accountService.verifyOTP(id, otp);
-            if (count == 0) {
-                response.sendRedirect(request.getContextPath() + "/dang-nhap?action=login&message=verify_success&alert=success");
-            } else if (count == -1) {
-                response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + Encode.forUriComponent(id) + "&message=verify_failed&alert=danger");
-            } else if (count == -2) {
-                response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + Encode.forUriComponent(id) + "&message=expired_otp&alert=danger");
-            } else {
-                response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + Encode.forUriComponent(id) + "&message=verify_retry&alert=danger");
+            String redirectUrl;
+
+            switch (count) {
+                case 0 -> redirectUrl = "/dang-nhap?action=login&message=verify_success&alert=success";
+                case -1 -> redirectUrl = "/dang-ky?action=verify&id=" + Encode.forUriComponent(id) + "&message=verify_failed&alert=danger";
+                case -2 -> redirectUrl = "/dang-ky?action=verify&id=" + Encode.forUriComponent(id) + "&message=expired_otp&alert=danger";
+                default -> redirectUrl = "/dang-ky?action=verify&id=" + Encode.forUriComponent(id) + "&message=verify_retry&alert=danger";
             }
+
+            response.sendRedirect(request.getContextPath() + redirectUrl);
+
         } else {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
         }
     }
+
 }

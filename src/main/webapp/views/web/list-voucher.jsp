@@ -164,7 +164,7 @@
                                 <div class="row">
                                     <div class="col-7">
                                         <input type="search" class="form-control" name="productName" placeholder="Nhập tên sản phẩm..."
-                                               value="${param.productName}">
+                                               value="${productName}">
                                     </div>
                                     <div class="col-5">
                                         <button type="submit" class="btn btn-outline-success" onclick="setProductTab()">Tìm kiếm</button>

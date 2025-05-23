@@ -42,13 +42,13 @@ public class UserAPI extends HttpServlet {
             String id = String.valueOf(JWTUtil.getIdUser(req));
             String csrfToken = req.getParameter("csrfToken");
 
-            //đầu tiên kiểm tra csrf Token
-            HttpSession session = req.getSession();
-            String sessionCsrf = (String) session.getAttribute("csrfToken");
-            if (sessionCsrf == null || !sessionCsrf.equals(csrfToken)) {
-                resp.sendError(HttpServletResponse.SC_FORBIDDEN, "CSRF token không hợp lệ");
-                return;
-            }
+//            //đầu tiên kiểm tra csrf Token
+//            HttpSession session = req.getSession();
+//            String sessionCsrf = (String) session.getAttribute("csrfToken");
+//            if (sessionCsrf == null || !sessionCsrf.equals(csrfToken)) {
+//                resp.sendError(HttpServletResponse.SC_FORBIDDEN, "CSRF token không hợp lệ");
+//                return;
+//            }
 
 
             String updateResult = customerService.updateInforCustomer(id, name, email, phone);

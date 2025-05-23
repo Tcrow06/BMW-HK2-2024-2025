@@ -5,6 +5,8 @@ import com.webecommerce.dto.discount.ProductDiscountDTO;
 import com.webecommerce.service.IBillDiscountService;
 import com.webecommerce.service.IProductDiscountService;
 import com.webecommerce.utils.JWTUtil;
+import org.apache.tomcat.util.security.Escape;
+import org.owasp.encoder.Encode;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -27,19 +29,6 @@ public class ListVoucherController extends HttpServlet {
     @Inject
     private IProductDiscountService productDiscountService;
 
-
-//    public static String escapeHtml(String input) {
-//        if (input == null) {
-//            return null;
-//        }
-//        return input.replace("&", "&amp;")
-//                .replace("<", "&lt;")
-//                .replace(">", "&gt;")
-//                .replace("\"", "&quot;")
-//                .replace("'", "&#x27;");
-//    }
-
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -49,7 +38,7 @@ public class ListVoucherController extends HttpServlet {
             request.setAttribute("currentDate", currentDate);
 
             String rawProductName = request.getParameter("productName"); // lấy giá trị gốc
-//            request.setAttribute("productName", escapeHtml(rawProductName));       // truyền gốc để service tìm kiếm
+            request.setAttribute("productName", Encode.forHtmlAttribute(rawProductName));       // truyền gốc để service tìm kiếm
 
             boolean searchMode = rawProductName != null && !rawProductName.trim().isEmpty();
             request.setAttribute("searchMode", searchMode);

@@ -1,17 +1,20 @@
 package com.webecommerce.dto.request.people;
 
+import org.owasp.encoder.Encode;
+
 import javax.persistence.Column;
 
-public class CustomerRequest extends UserRequest{
+import org.owasp.encoder.Encode;
+
+public class CustomerRequest extends UserRequest {
     private String ggID;
     private String fbID;
     private String userName;
     private String password;
-
     private String avatar;
 
     public String getUserName() {
-        return userName;
+        return Encode.forHtmlAttribute(userName);
     }
 
     public void setUserName(String userName) {
@@ -19,16 +22,15 @@ public class CustomerRequest extends UserRequest{
     }
 
     public String getPassword() {
-        return password;
+        return Encode.forHtmlAttribute(password);
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-
     public String getGgID() {
-        return ggID;
+        return Encode.forHtmlAttribute(ggID);
     }
 
     public void setGgID(String ggID) {
@@ -36,7 +38,7 @@ public class CustomerRequest extends UserRequest{
     }
 
     public String getFbID() {
-        return fbID;
+        return Encode.forHtmlAttribute(fbID);
     }
 
     public void setFbID(String fbID) {
@@ -45,7 +47,7 @@ public class CustomerRequest extends UserRequest{
 
     @Override
     public String getAvatar() {
-        return avatar;
+        return Encode.forHtmlAttribute(avatar);
     }
 
     @Override

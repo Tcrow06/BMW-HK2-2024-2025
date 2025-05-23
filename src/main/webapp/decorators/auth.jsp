@@ -84,19 +84,19 @@
                 <div class="input-field">
                     <i class="fas fa-user"></i>
                     <input type="text" placeholder="Họ và tên" id="name" name="name"
-                           value="<%= registrationData != null ? registrationData.getName() : "" %>"/>
+                           value="<%= registrationData != null ? registrationData.getNameEncoded() : "" %>"/>
                 </div>
 
                 <div class="input-field">
                     <i class="fas fa-phone"></i>
                     <input type="tel" placeholder="Số điện thoại" pattern="[0-9]{10}" id="phone" name="phone"
-                           value="<%= registrationData != null ? registrationData.getPhone() : "" %>"/>
+                           value="<%= registrationData != null ? registrationData.getPhoneEncoded() : "" %>"/>
                 </div>
 
                 <div class="input-field">
                     <i class="fas fa-envelope"></i>
                     <input type="email" placeholder="Email" id="email" name="email"
-                           value="<%= registrationData != null ? registrationData.getEmail() : "" %>"/>
+                           value="<%= registrationData != null ? registrationData.getEmailEncoded() : "" %>"/>
                 </div>
 
                 <div class="input-field">

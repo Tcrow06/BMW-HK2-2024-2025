@@ -1,5 +1,7 @@
 package com.webecommerce.dto.request.people;
 
+import org.owasp.encoder.Encode;
+
 public class UserRequest {
     private Long id;
     private String name;
@@ -45,5 +47,21 @@ public class UserRequest {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getNameEncoded() {
+        return Encode.forHtmlAttribute(name);
+    }
+
+    public String getEmailEncoded() {
+        return Encode.forHtmlAttribute(email);
+    }
+
+    public String getPhoneEncoded() {
+        return Encode.forHtmlAttribute(phone);
+    }
+
+    public String getAvatarEncoded() {
+        return Encode.forHtmlAttribute(avatar);
     }
 }
