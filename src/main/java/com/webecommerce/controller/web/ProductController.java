@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.webecommerce.utils.StringUtils.sanitizeXsltInputNumber;
+
 @WebServlet(urlPatterns = {"/danh-sach-san-pham"})
 public class ProductController extends HttpServlet {
 
@@ -62,8 +64,18 @@ public class ProductController extends HttpServlet {
 
     // Hàm vệ sinh đầu vào cho XSLT (tương tự nhưng có thể tùy chỉnh thêm nếu cần)
     public static String sanitizeXsltInput(String input) {
-        return sanitizeInput(input); // Có thể thêm logic riêng cho XSLT nếu cần
+        if (input == null) return null;
+        // Chặn các hàm nguy hiểm trong XSLT
+        String[] dangerousPatterns = {
+                "xsl:", "document\\(", "system-property\\(", "xsl:value-of", "xsl:template", "xsl:stylesheet", "<", ">", "\"", "'"
+        };
+        String sanitized = input.toLowerCase();
+        for (String pattern : dangerousPatterns) {
+            sanitized = sanitized.replaceAll("(?i)" + pattern, ""); // loại bỏ bất kể hoa/thường
+        }
+        return sanitized;
     }
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

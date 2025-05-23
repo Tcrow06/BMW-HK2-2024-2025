@@ -81,5 +81,18 @@ public class StringUtils {
         return input;
     }
 
+    public static String sanitizeXsltInputs(String input) {
+        if (input == null) return null;
+        // Chặn các hàm nguy hiểm trong XSLT
+        String[] dangerousPatterns = {
+                "xsl:", "document\\(", "system-property\\(", "xsl:value-of", "xsl:template", "xsl:stylesheet", "<", ">", "\"", "'"
+        };
+        String sanitized = input.toLowerCase();
+        for (String pattern : dangerousPatterns) {
+            sanitized = sanitized.replaceAll("(?i)" + pattern, ""); // loại bỏ bất kể hoa/thường
+        }
+        return sanitized;
+    }
+
 
 }
