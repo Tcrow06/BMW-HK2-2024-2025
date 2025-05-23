@@ -30,8 +30,6 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
-import static com.webecommerce.utils.StringUtils.sanitizeInput;
-
 @WebServlet(urlPatterns = {"/dang-nhap", "/dang-ky"})
 public class AuthController extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -41,6 +39,27 @@ public class AuthController extends HttpServlet {
     
     @Inject
     private ICartItemService cartItemService;
+
+    public static String sanitizeXsltInputs(String input) {
+        if (input == null) return null;
+
+        // Escape XML special characters
+        input = input.replace("&", "&amp;");
+        input = input.replace("<", "&lt;");
+        input = input.replace(">", "&gt;");
+        input = input.replace("\"", "&quot;");
+        input = input.replace("'", "&apos;");
+
+        // Remove dangerous XSLT-related expressions
+        String[] dangerousPatterns = {
+                "xsl:", "document\\(", "system-property\\(", "xsl:value-of", "xsl:template", "xsl:stylesheet"
+        };
+        for (String pattern : dangerousPatterns) {
+            input = input.replaceAll("(?i)" + pattern, "");
+        }
+
+        return input;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -58,7 +77,7 @@ public class AuthController extends HttpServlet {
         }
 
         HttpSession session = request.getSession();
-        String sendDirection = sanitizeInput(request.getParameter("send-direction"));
+        String sendDirection = sanitizeXsltInputs(request.getParameter("send-direction"));
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
@@ -67,11 +86,11 @@ public class AuthController extends HttpServlet {
             session.setAttribute("send-direction", sendDirection);
         }
 
-        String action = sanitizeInput(request.getParameter("action"));
+        String action = sanitizeXsltInputs(request.getParameter("action"));
         if (action != null && (action.equals("login") || action.equals("register") || action.equals("verify"))) {
-            String message = sanitizeInput(request.getParameter("message"));
-            String alert = sanitizeInput(request.getParameter("alert"));
-            String link = sanitizeInput(request.getParameter("link"));
+            String message = sanitizeXsltInputs(request.getParameter("message"));
+            String alert = sanitizeXsltInputs(request.getParameter("alert"));
+            String link = sanitizeXsltInputs(request.getParameter("link"));
 
             // Allow list cho alert
             if (alert != null && !alert.matches("^(success|danger)$")) {
@@ -120,13 +139,11 @@ public class AuthController extends HttpServlet {
             request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
         }
 
-        if (session.getAttribute("csrfToken") == null) {
-            String csrfToken = UUID.randomUUID().toString();
+        String csrfToken = sanitizeXsltInputs((String) session.getAttribute("csrfToken"));
+
             session.setAttribute("csrfToken", csrfToken);
             request.setAttribute("csrfToken", csrfToken);
-        } else {
-            request.setAttribute("csrfToken", session.getAttribute("csrfToken"));
-        }
+
 
         request.getRequestDispatcher("/decorators/auth.jsp").forward(request, response);
     }
@@ -138,7 +155,7 @@ public class AuthController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
 
-        String action = sanitizeInput(request.getParameter("action"));
+        String action = sanitizeXsltInputs(request.getParameter("action"));
         CheckOutRequestDTO checkOutRequestDTO = (CheckOutRequestDTO) session.getAttribute("orderNotHandler");
 
         if (action != null && action.equals("login")) {
@@ -150,14 +167,14 @@ public class AuthController extends HttpServlet {
                 return;
             }
 
-            UserResponse foundUser = accountService.findByUserNameAndPasswordAndStatus(account.getUserName(), account.getPassword(), "UNVERIFIED");
+            UserResponse foundUser = accountService.findByUserNameAndPasswordAndStatus(sanitizeXsltInputs(account.getUserName()), sanitizeXsltInputs(account.getPassword()), "UNVERIFIED");
             if (foundUser != null) {
-                accountService.sendOTPToEmail(foundUser.getEmail(), foundUser.getId(), "register");
+                accountService.sendOTPToEmail(sanitizeXsltInputs(foundUser.getEmail()), foundUser.getId(), "register");
                 response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + Encode.forUriComponent(foundUser.getId().toString()) + "&message=unverified&alert=danger");
                 return;
             }
 
-            UserResponse user = accountService.findByUserNameAndPassword(account.getUserName(), account.getPassword());
+            UserResponse user = accountService.findByUserNameAndPassword(sanitizeXsltInputs(account.getUserName()), sanitizeXsltInputs(account.getPassword()));
             if (user != null) {
                 if (user.getStatus().equals(EnumAccountStatus.BLOCK)) {
                     session.setAttribute("loginData", account);
@@ -204,7 +221,7 @@ public class AuthController extends HttpServlet {
             try {
                 CustomerResponse customerResponse = accountService.save(customerRequest);
                 if (customerResponse != null) {
-                    boolean ok = accountService.sendOTPToEmail(customerResponse.getEmail(), customerResponse.getId(), "register");
+                    boolean ok = accountService.sendOTPToEmail(sanitizeXsltInputs(customerResponse.getEmail()), customerResponse.getId(), "register");
                     if (ok) {
                         response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + Encode.forUriComponent(customerResponse.getId().toString()));
                     } else {
@@ -231,8 +248,8 @@ public class AuthController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/dang-nhap?action=register&message=" + errorMessage + "&alert=danger");
             }
         } else if (action != null && action.equals("verify")) {
-            String otp = sanitizeInput(request.getParameter("otp"));
-            String id = sanitizeInput(request.getParameter("id"));
+            String otp = sanitizeXsltInputs(request.getParameter("otp"));
+            String id = sanitizeXsltInputs(request.getParameter("id"));
             if (otp == null || !otp.matches("^\\d{6}$") || id == null || !id.matches("^\\d+$")) {
                 response.sendRedirect(request.getContextPath() + "/dang-ky?action=verify&id=" + Encode.forUriComponent(id) + "&message=invalid_otp_or_id&alert=danger");
                 return;
