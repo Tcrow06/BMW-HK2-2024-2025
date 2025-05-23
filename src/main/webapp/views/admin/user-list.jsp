@@ -1,8 +1,7 @@
 <%@include file="/common/taglib.jsp" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<!-- SweetAlert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" integrity="sha384-AnrijSOFszNO4c6f3rs58LsVOvJotv0TnKu/7VaEwXiaevsXM8bFluKuJRV6gmzH" crossorigin="anonymous"><!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" integrity="sha384-/r5ie+XZL2fzZr0AqbodWFHeEJBwsC9hXwp2JtbUHN0YIVq17vrdjRlb5x9B2MUb" crossorigin="anonymous"></script>
 <div class="content">
     <div class="page-header">
         <div class="page-title">

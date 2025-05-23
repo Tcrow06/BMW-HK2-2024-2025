@@ -58,9 +58,8 @@
 <script src="<c:url value='/static/admin/assets/plugins/sweetalert/sweetalert2.all.min.js'/>"></script>
 <script src="<c:url value='/static/admin/assets/plugins/sweetalert/sweetalerts.min.js'/>"></script>
 <script src="<c:url value='/static/admin/assets/js/script.js'/>"></script>
-<script src="<c:url value='https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.min.js'/>"></script>
-<script src="<c:url value='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js'/>"></script>
-<script src="<c:url value='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'/>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.min.js" integrity="sha384-uhiFrMWT42HYzPPRKpjV4R3CuEANqoDxYZNkFYkFuLVbBx18C09moWDB/WTVtAGk" crossorigin="anonymous"></script><script src="<c:url value='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js'/>"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 <script src="<c:url value='/static/admin/assets/js/bootstrap.bundle.min.js'/>"></script>
 <script src="<c:url value='/static/web/js/token/refreshToken.js'/> "></script>
 

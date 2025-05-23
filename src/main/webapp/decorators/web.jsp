@@ -10,8 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Male-Fashion | Template</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -21,11 +20,7 @@
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="<c:url value="/static/css/bootstrap.min.css"/>" type="text/css">
-<<<<<<< HEAD
-    <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"/>"></script>
-=======
-    <%--    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>--%>
->>>>>>> b86e47164152e98bbdc9d49df6b936ed4affe25f
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js" integrity="sha384-HQ6L4zUYZPwuxw5BaGM/NCWDL+JdD2277xjgvpUvXn1fcBlHXnDCx7D2gqHUSuMk" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="<c:url value="/static/css/font-awesome.min.css"/>" type="text/css">
     <link rel="stylesheet" href="<c:url value="/static/css/elegant-icons.css"/>" type="text/css">
     <link rel="stylesheet" href="<c:url value="/static/css/magnific-popup.css"/>" type="text/css">
@@ -33,7 +28,7 @@
     <link rel="stylesheet" href="<c:url value="/static/css/owl.carousel.min.css"/>" type="text/css">
     <link rel="stylesheet" href="<c:url value="/static/css/slicknav.min.css"/>" type="text/css">
     <link rel="stylesheet" href="<c:url value="/static/css/style.css"/>" type="text/css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 
     <script src="<c:url value='/template/web/assets/js/jquery.2.1.1.min.js' />"></script>
     <script type='text/javascript' src='<c:url value="/template/web/js/jquery-2.2.3.min.js" />'></script>
@@ -67,8 +62,7 @@
 <!-- Search End -->
 
 <!-- Js Plugins -->
-<script src="<c:url value="https://code.jquery.com/jquery-3.6.0.min.js"/>"></script>
-<script src="<c:url value='/static/web/js/token/refreshToken.js'/> "></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script><script src="<c:url value='/static/web/js/token/refreshToken.js'/> "></script>
 <script src="<c:url value="/static/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value="/static/js/jquery.nice-select.min.js"/>"></script>
 <script src="<c:url value="/static/js/jquery.nicescroll.min.js"/>"></script>

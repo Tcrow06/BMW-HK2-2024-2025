@@ -7,13 +7,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script
-            src="<c:url value="https://kit.fontawesome.com/64d58efce2.js"/>"
-            crossorigin="anonymous"
-    ></script>
-    <link href="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>" rel="stylesheet">
+
+
+<%--    <script--%>
+<%--            src="<c:url value="https://kit.fontawesome.com/64d58efce2.js"/>"--%>
+<%--            crossorigin="anonymous"--%>
+<%--    ></script>--%>
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
     <link type="text/css" rel="stylesheet" href="<c:url value="/static/error/css/font-awesome.min.css"/>" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link rel="stylesheet" href="<c:url value="/static/auth/style.css"/>" />
     <title>Đăng nhập và đăng ký</title>
 </head>
@@ -235,8 +240,7 @@
 </script>
 <script src="<c:url value='/static/auth/js/sendDirection.js'/> " type="text/javascript"></script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
 
 </body>
 </html>
