@@ -150,11 +150,22 @@ public class AuthController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+
+
         HttpSession session = request.getSession();
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
 
+
+        String csrfTokenSession = (String) session.getAttribute("csrfToken");
+        String csrfTokenForm = sanitizeXsltInputs(request.getParameter("csrfToken"));
+
+//        if (csrfTokenSession == null || !csrfTokenSession.equals(csrfTokenForm)) {
+//            response.sendError(HttpServletResponse.SC_FORBIDDEN, "CSRF token invalid");
+//            return;
+//        }
         String action = sanitizeXsltInputs(request.getParameter("action"));
         CheckOutRequestDTO checkOutRequestDTO = (CheckOutRequestDTO) session.getAttribute("orderNotHandler");
 

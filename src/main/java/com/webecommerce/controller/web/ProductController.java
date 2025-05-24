@@ -29,12 +29,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.webecommerce.utils.StringUtils.safeParseInteger;
 import static com.webecommerce.utils.StringUtils.sanitizeXsltInputNumber;
 
 @WebServlet(urlPatterns = {"/danh-sach-san-pham"})
 public class ProductController extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+
+    private static final int MAX_ALLOWED_PAGE = 1000;
+    private static final double MAX_ALLOWED_PRICE = 1_000_000.0;
 
     @Inject
     private IProductService productService;
@@ -84,52 +88,74 @@ public class ProductController extends HttpServlet {
 
         // Xử lý tham số brand
         String brand = sanitizeXsltInput(request.getParameter("brand"));
-        if (brand != null && !brand.matches("^[a-zA-Z0-9\\s-]{0,50}$")) {
-            logger.warn("Invalid brand format: {}", brand);
-            brand = null;
-        } else if (brand != null && !isValidBrand(brand)) {
-            logger.warn("Brand not found in valid list: {}", brand);
-            brand = null;
+
+        if (brand != null) {
+            if (brand.length() > 50) {
+                logger.warn("Brand too long: {} characters", brand.length());
+                brand = null;
+            } else if (!brand.matches("^[a-zA-Z0-9\\s-]*$")) {
+                logger.warn("Invalid brand format: {}", brand);
+                brand = null;
+            } else if (!isValidBrand(brand)) {
+                logger.warn("Brand not found in valid list: {}", brand);
+                brand = null;
+            }
         }
 
         // Xử lý tham số page
         int page = 1; // Giá trị mặc định
-        String pageParam = sanitizeXsltInputNumber(request.getParameter("page"));
         boolean redirectNeeded = false;
+        String pageParam = sanitizeXsltInputNumber(request.getParameter("page"));
+        if(pageParam.length() > 10){
+            redirectNeeded = true;
+        }else {
 
-        if (pageParam != null && pageParam.matches("^\\d+$")) {
-            try {
-                page = Integer.parseInt(pageParam);
-                if (page < 1) {
+
+            Integer parsedPage = safeParseInteger(pageParam, 1, 1000);
+
+
+            if (parsedPage != null) {
+                try {
+                    page = parsedPage;
+                    if (page < 1) {
+                        redirectNeeded = true;
+                    }
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid page format: {}", pageParam);
                     redirectNeeded = true;
                 }
-            } catch (NumberFormatException e) {
-                logger.error("Invalid page format: {}", pageParam);
+            } else if (pageParam != null) {
+                logger.warn("Potential malicious page input: {}", pageParam);
                 redirectNeeded = true;
             }
-        } else if (pageParam != null) {
-            logger.warn("Potential malicious page input: {}", pageParam);
-            redirectNeeded = true;
         }
 
         // Xử lý tham số maxPageItem
         int maxPageItem = 9; // Giá trị mặc định
+
         String maxPageItemParam = sanitizeXsltInputNumber(request.getParameter("maxPageItem"));
 
-        if (maxPageItemParam != null && maxPageItemParam.matches("^\\d+$")) {
-            try {
-                maxPageItem = Integer.parseInt(maxPageItemParam);
-                if (maxPageItem < 1 || maxPageItem > 100) {
-                    logger.warn("Invalid maxPageItem: {}", maxPageItemParam);
+        if(maxPageItemParam.length() > 10){
+            redirectNeeded = true;
+        }else {
+
+
+            Integer parsedMaxPageItem = safeParseInteger(maxPageItemParam, 1, 100);
+            if (parsedMaxPageItem != null) {
+                try {
+                    maxPageItem = parsedMaxPageItem;
+                    if (maxPageItem < 1 || maxPageItem > 100) {
+                        logger.warn("Invalid maxPageItem: {}", maxPageItemParam);
+                        redirectNeeded = true;
+                    }
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid maxPageItem format: {}", maxPageItemParam);
                     redirectNeeded = true;
                 }
-            } catch (NumberFormatException e) {
-                logger.error("Invalid maxPageItem format: {}", maxPageItemParam);
+            } else if (maxPageItemParam != null) {
+                logger.warn("Potential malicious maxPageItem input: {}", maxPageItemParam);
                 redirectNeeded = true;
             }
-        } else if (maxPageItemParam != null) {
-            logger.warn("Potential malicious maxPageItem input: {}", maxPageItemParam);
-            redirectNeeded = true;
         }
 
         // Chuyển hướng nếu có tham số không hợp lệ
@@ -172,8 +198,12 @@ public class ProductController extends HttpServlet {
         }
 
         // Xử lý tham số category
-        String categoryParam = sanitizeXsltInput(request.getParameter("category"));
-        int categoryId = -1; // Giá trị mặc định
+        String categoryRaw = request.getParameter("category");
+        logger.debug("Raw category parameter: {}", categoryRaw);
+
+        String categoryParam = sanitizeXsltInput(categoryRaw);
+        int categoryId = -1;
+
         if (categoryParam != null && !categoryParam.isEmpty()) {
             if (categoryParam.matches("^\\d+$")) {
                 try {
@@ -193,7 +223,10 @@ public class ProductController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/danh-sach-san-pham?page=1&maxPageItem=9");
                 return;
             }
+        } else {
+            logger.info("Empty or missing category parameter, using default.");
         }
+
 
         // Xử lý tham số minPrice và maxPrice
         double minPrice = 0; // Giá trị mặc định

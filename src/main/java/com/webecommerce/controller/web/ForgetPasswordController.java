@@ -4,6 +4,8 @@ import com.webecommerce.dto.response.people.CustomerResponse;
 import com.webecommerce.entity.other.AccountEntity;
 import com.webecommerce.service.IAccountService;
 import com.webecommerce.service.ICustomerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
@@ -27,6 +30,8 @@ public class ForgetPasswordController extends HttpServlet {
 
     @Inject
     private ICustomerService customerService;
+    private static final Logger logger = LoggerFactory.getLogger(ProductDetailController.class);
+
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -38,10 +43,20 @@ public class ForgetPasswordController extends HttpServlet {
         request.getSession().setAttribute("csrfToken", csrfToken);
         request.setAttribute("csrfToken", request.getSession().getAttribute("csrfToken"));
 
-        if (message != null && alert != null) {
-            request.setAttribute("message", resourceBundle.getString(message));
+        if (message != null && message.length() <= 50 && message.matches("^[a-z_]+$")) {
+            try {
+                request.setAttribute("message", resourceBundle.getString(message));
+            } catch (MissingResourceException e) {
+                logger.warn("Invalid message key: {}", message);
+                request.setAttribute("message", ""); // hoặc redirect về trang lỗi chung
+            }
+        }
+
+        if (alert != null && alert.length() <= 20 && alert.matches("^(success|danger|info|warning)$")) {
             request.setAttribute("alert", alert);
         }
+
+
         if (action != null && action.equals("verify")) {
 
             request.getRequestDispatcher("/views/web/enter-OTP.jsp").forward(request,response);
