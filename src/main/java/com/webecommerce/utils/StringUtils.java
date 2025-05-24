@@ -74,8 +74,8 @@ public class StringUtils {
         input = StringEscapeUtils.escapeXml11(input.trim());
 
         // Bước 6: Giới hạn độ dài tối đa
-        if (input.length() > 50) {
-            input = input.substring(0, 50);
+        if (input.length() > 10) {
+            input = input.substring(0, 10);
         }
 
         return input;
@@ -93,6 +93,18 @@ public class StringUtils {
         }
         return sanitized;
     }
+
+    public static Integer safeParseInteger(String input, int min, int max) {
+        if (input == null || !input.matches("^\\d{1,10}$")) return null;
+        try {
+            int value = Integer.parseInt(input);
+            if (value < min || value > max) return null;
+            return value;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
 
 
 }

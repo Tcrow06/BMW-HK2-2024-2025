@@ -108,4 +108,4 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js" integrity="sha384-X+1z+Xr0Ov4moqrIsziyxD+mfdV5DdxuIWlP9wSATL4JFuMYktPeC2rHIDFmOA/s" crossorigin="anonymous"></script>

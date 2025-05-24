@@ -15,11 +15,10 @@
 <%--  <link rel="stylesheet" href="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>"
         integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMPhuv1De4VfM1g2B1iI4+6jCW51e7no4mr10s5"
         crossorigin="anonymous">--%>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
 
   <!-- jQuery -->
-  <script src="<c:url value="https://code.jquery.com/jquery-3.6.0.min.js"/>"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
 
   <!-- Bootstrap -->
   <link href="<c:url value="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -43,8 +42,7 @@
   <!-- Additional Scripts -->
   <script src="<c:url value='/template/paging/jquery.twbsPagination.js' />"></script>
   <script src="<c:url value='/static/web/js/token/refreshToken.js'/> "></script>
-  <script src="<c:url value="https://cdn.jsdelivr.net/npm/sweetalert2@11"/>"></script>
-</head>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" integrity="sha384-/r5ie+XZL2fzZr0AqbodWFHeEJBwsC9hXwp2JtbUHN0YIVq17vrdjRlb5x9B2MUb" crossorigin="anonymous"></script></head>
 
 <body>
 <!-- Page Preloader -->

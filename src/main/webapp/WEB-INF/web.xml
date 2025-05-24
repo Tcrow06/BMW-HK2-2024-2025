@@ -67,6 +67,26 @@
     <listener-class>com.webecommerce.configuration.MyAppContextListener</listener-class>
   </listener>
 
+
+
+
+    <filter>
+        <filter-name>HttpSecurityHeadersFilter</filter-name>
+        <filter-class>org.apache.catalina.filters.HttpHeaderSecurityFilter</filter-class>
+        <init-param>
+            <param-name>antiClickJackingOption</param-name>
+            <param-value>DENY</param-value>
+        </init-param>
+        <init-param>
+            <param-name>blockContentTypeSniffingEnabled</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>HttpSecurityHeadersFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
 <!--  <jsp-config>-->
 <!--    <jsp-property-group>-->
 <!--      <url-pattern>/*</url-pattern>-->
