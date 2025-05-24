@@ -46,6 +46,34 @@ public class ProductController extends HttpServlet {
     @Inject
     private ICategoryService categoryService;
 
+    // Hàm vệ sinh đầu vào kiểu chuỗi dành cho số thực (double)
+    public static String sanitizeDoubleInput(String input) {
+        if (input == null) return null;
+
+        String decoded = input.trim();
+
+        // Cố gắng decode nếu có chứa ký tự % và xem như URL-encoded
+        if (decoded.contains("%")) {
+            try {
+                decoded = URLDecoder.decode(decoded, StandardCharsets.UTF_8.name()).trim();
+            } catch (IllegalArgumentException | UnsupportedEncodingException e) {
+                logger.warn("Skipping URL decoding due to invalid format: {}", input);
+                // Giữ nguyên giá trị gốc không decode
+            }
+        }
+
+        // Loại bỏ ký tự không hợp lệ trong số thực
+        decoded = decoded.replaceAll("[^0-9+\\-\\.]", "");
+
+        // Kiểm tra định dạng số
+        if (!decoded.matches("^[+-]?\\d*(\\.\\d+)?$")) {
+            logger.warn("Invalid or potentially malicious double input: {}", decoded);
+            return null;
+        }
+
+        return decoded;
+    }
+
     // Hàm vệ sinh đầu vào với kiểm tra Path Traversal
     public static String sanitizeInput(String input) {
         if (input == null) return null;
@@ -231,8 +259,8 @@ public class ProductController extends HttpServlet {
         // Xử lý tham số minPrice và maxPrice
         double minPrice = 0; // Giá trị mặc định
         double maxPrice = Double.MAX_VALUE; // Giá trị mặc định
-        String minPriceStr = sanitizeInput(request.getParameter("minPrice"));
-        String maxPriceStr = sanitizeInput(request.getParameter("maxPrice"));
+        String minPriceStr = sanitizeDoubleInput(request.getParameter("minPrice"));
+        String maxPriceStr = sanitizeDoubleInput(request.getParameter("maxPrice"));
 
         if (minPriceStr != null && minPriceStr.matches("^\\d+(\\.\\d+)?$")) {
             try {
