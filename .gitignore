@@ -39,3 +39,5 @@ build/
 
 ###.smarttomcat
 .smarttomcat
+
+src/main/resources/application.properties

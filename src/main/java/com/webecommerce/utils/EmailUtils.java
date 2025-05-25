@@ -9,8 +9,13 @@ import java.util.Properties;
 public class EmailUtils {
     private static final String SMTP_SERVER = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
-    private static final String USERNAME = "elevenfashionshop11@gmail.com";
-    private static final String PASSWORD = "zjka rzbm wojx mwqq";
+
+    //    private static final String USERNAME = ConfigUtils.get("SMTP_USERNAME");
+//    private static final String PASSWORD = ConfigUtils.get("SMTP_PASSWORD");
+
+    private static final String USERNAME = System.getenv("SMTP_USERNAME");
+    private static final String PASSWORD = System.getenv("SMTP_PASSWORD");
+
 
     public static void sendEmail(String toEmail, String subject, String body) {
         Properties properties = new Properties();
