@@ -33,17 +33,6 @@ cd BMW-HK2-2024-2025
 - `git clone`: Sao chép toàn bộ mã nguồn từ kho GitHub về máy.
 - `cd BMW-HK2-2024-2025`: Di chuyển vào thư mục dự án.
 
-## 🔨 Xây Dựng Dự Án (Build)
-
-Chạy lệnh sau để biên dịch và đóng gói dự án bằng Maven:
-
-```sh
-mvn clean package
-```
-
-- `mvn clean`: Xóa các file build cũ để đảm bảo build sạch.
-- `mvn package`: Đóng gói ứng dụng thành tệp `.war` để chạy.
-
 ## 🐳 Chạy Dự Án bằng Docker
 
 ### Tạo Image và Chạy Container
@@ -67,16 +56,6 @@ http://localhost:8080
 ## ⚠ Xử Lý Sự Cố
 
 - Kiểm tra Docker có đang chạy không trước khi thực hiện các lệnh Docker.
-- Kiểm tra phiên bản JDK đang sử dụng:
-  ```sh
-  java -version
-  ```
-- Kiểm tra phiên bản Maven:
-  ```sh
-  mvn -version
-  ```
-- Nếu cổng `8080` đã được sử dụng, thay đổi trong `application.properties` hoặc sử dụng tham số `-p 8081:8080` khi chạy Docker.
-
 ---
 
 ## 🖼 Hình Ảnh Minh Họa
