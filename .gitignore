@@ -41,3 +41,7 @@ build/
 .smarttomcat
 
 src/main/resources/application.properties
+
+
+### ENVIRONMENT ###
+.env
