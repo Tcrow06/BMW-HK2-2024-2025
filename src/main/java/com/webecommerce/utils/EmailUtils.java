@@ -10,7 +10,7 @@ public class EmailUtils {
     private static final String SMTP_SERVER = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
 
-    //    private static final String USERNAME = ConfigUtils.get("SMTP_USERNAME");
+//    private static final String USERNAME = ConfigUtils.get("SMTP_USERNAME");
 //    private static final String PASSWORD = ConfigUtils.get("SMTP_PASSWORD");
 
     private static final String USERNAME = System.getenv("SMTP_USERNAME");

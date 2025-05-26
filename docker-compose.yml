@@ -49,6 +49,8 @@ services:
       MYSQL_PASSWORD: "1234"
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     ports:
       - "8080:8080"
       - "8443:8443"
