@@ -18,8 +18,6 @@
 Trước khi chạy dự án, hãy đảm bảo bạn đã cài đặt các công cụ sau:
 
 - **Docker** (phiên bản mới nhất) - [📥 Tải Docker](https://www.docker.com/get-started)
-- **JDK 21** - [📥 Tải JDK 21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
-- **Maven 3.9.9** - [📥 Tải Maven 3.9.9](https://drive.google.com/drive/u/0/folders/1CpC8sUWQmw2C9Fo0OBp1TaVj5un91SHq?fbclid=IwAR0pkpiKBvCjs0vgaeDgoD-TvgRsO-eNR4pzoPCq7FNDEYCuV7ITlowkiuk)
 
 ## 📥 Clone Repository (Sao Chép Mã Nguồn)
 
